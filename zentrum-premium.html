@@ -1,960 +1,812 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZENTRUM — El Arte de Moverse</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZENTRUM — El Arte de Moverse</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#070707;--white:#f5f5f7;--gray:#6e6e73;--silver:#a1a1a6;
+  --accent:#c8a96e;--accent2:rgba(200,169,110,0.15);
+  --font:-apple-system,'SF Pro Display','Helvetica Neue',Arial,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-    :root {
-      --black: #070707;
-      --white: #f5f5f7;
-      --gray: #6e6e73;
-      --silver: #a1a1a6;
-      --accent: #c8a96e;
-      --accent-dim: rgba(200,169,110,0.15);
-      --font: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-    }
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:64px;
+  background:rgba(7,7,7,0.0);
+  backdrop-filter:saturate(180%) blur(0px);
+  transition:background .4s,backdrop-filter .4s;
+}
+nav.scrolled{background:rgba(7,7,7,0.82);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(255,255,255,0.06)}
+.nav-logo{font-size:18px;font-weight:700;letter-spacing:.25em;color:var(--white);text-decoration:none}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{color:var(--silver);text-decoration:none;font-size:13px;letter-spacing:.02em;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--accent);color:#000;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:opacity .2s}
+.nav-cta:hover{opacity:.85}
 
-    html { scroll-behavior: smooth; }
+/* ── HERO ── */
+.hero{
+  position:relative;height:100vh;min-height:700px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 100% 70% at 50% 100%,rgba(200,169,110,0.07) 0%,transparent 70%),
+             linear-gradient(180deg,#070707 0%,#0d0d0d 100%);
+}
+/* Simulated ground light */
+.hero-ground{
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--accent) 50%,transparent 100%);
+  opacity:.4;filter:blur(1px);
+}
+/* Car placeholder — replace with <img> */
+.hero-car-wrap{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:min(900px,90vw);
+}
+.hero-car-img{
+  width:100%;display:block;
+  /* PLACEHOLDER — drop a real car PNG here */
+  aspect-ratio:16/7;
+  background:
+    linear-gradient(180deg,transparent 30%,rgba(200,169,110,0.04) 100%),
+    radial-gradient(ellipse 60% 50% at 50% 60%,rgba(255,255,255,0.04) 0%,transparent 80%);
+  border-radius:4px;
+  position:relative;
+}
+/* CSS car silhouette for prototype */
+.hero-car-img::before{
+  content:'';position:absolute;inset:20% 10% 0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.03) 0%,rgba(255,255,255,0.01) 100%);
+  border-radius:40% 40% 0 0 / 60% 60% 0 0;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.hero-car-placeholder{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
+}
+.hero-car-placeholder span{font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,0.15);text-transform:uppercase}
+.hero-car-placeholder strong{font-size:72px;font-weight:900;letter-spacing:-.04em;color:rgba(255,255,255,0.04)}
 
-    body {
-      background: var(--black);
-      color: var(--white);
-      font-family: var(--font);
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
+.hero-content{position:relative;z-index:2;padding-bottom:120px}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.3em;color:var(--accent);text-transform:uppercase;margin-bottom:24px;opacity:0;transform:translateY(20px);animation:fadeUp .8s .3s ease forwards}
+.hero-title{font-size:clamp(56px,9vw,108px);font-weight:700;line-height:1.0;letter-spacing:-.04em;margin-bottom:24px;opacity:0;transform:translateY(30px);animation:fadeUp .9s .5s ease forwards}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:clamp(16px,1.8vw,20px);font-weight:300;color:var(--silver);max-width:520px;margin:0 auto 44px;line-height:1.6;opacity:0;transform:translateY(20px);animation:fadeUp .9s .7s ease forwards}
+.hero-btns{display:flex;gap:16px;justify-content:center;opacity:0;transform:translateY(20px);animation:fadeUp .9s .9s ease forwards}
+.btn-white{background:var(--white);color:#000;padding:14px 32px;border-radius:30px;font-size:15px;font-weight:600;text-decoration:none;transition:transform .2s,opacity .2s}
+.btn-white:hover{transform:scale(1.03)}
+.btn-outline{background:transparent;color:var(--white);padding:14px 32px;border-radius:30px;font-size:15px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);transition:background .2s,border-color .2s}
+.btn-outline:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,.4)}
+.hero-scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeUp 1s 1.4s ease forwards}
+.hero-scroll-cue span{font-size:10px;letter-spacing:.25em;color:var(--gray);text-transform:uppercase}
+.scroll-bar{width:1px;height:44px;background:linear-gradient(180deg,var(--accent),transparent);animation:pulse 2s ease-in-out infinite}
 
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 48px;
-      height: 64px;
-      background: rgba(7,7,7,0.72);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: background 0.3s;
-    }
-    .nav-logo {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.25em;
-      color: var(--white);
-      text-decoration: none;
-    }
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      list-style: none;
-    }
-    .nav-links a {
-      color: var(--silver);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.02em;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--white); }
-    .nav-cta {
-      background: var(--accent);
-      color: #000;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-    .nav-cta:hover { opacity: 0.85; }
+/* ── SCROLL SHOWCASE — the Apple/Tesla magic ── */
+.showcase{position:relative}
+.showcase-track{height:500vh;position:relative}
+.showcase-sticky{
+  position:sticky;top:0;height:100vh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+/* Background that shifts per scene */
+.showcase-bg{
+  position:absolute;inset:0;
+  transition:background 1s ease;
+}
+/* Scenes */
+.scene{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .6s ease;
+}
+.scene.active{opacity:1;pointer-events:auto}
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      height: 100vh;
-      min-height: 700px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 70%, rgba(200,169,110,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(200,169,110,0.05) 0%, transparent 60%),
-        linear-gradient(180deg, #070707 0%, #0d0d0d 50%, #070707 100%);
-    }
-    /* Simulated cinematic car silhouette using CSS */
-    .hero-car {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 900px;
-      height: 320px;
-      background: linear-gradient(180deg, transparent 0%, rgba(200,169,110,0.03) 100%);
-      /* In production: replace with actual hero car image */
-    }
-    .hero-car::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      filter: blur(2px);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      padding-bottom: 80px;
-    }
-    .hero-eyebrow {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s 0.3s ease forwards;
-    }
-    .hero-title {
-      font-size: clamp(52px, 8vw, 96px);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin-bottom: 24px;
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeUp 0.9s 0.5s ease forwards;
-    }
-    .hero-title span { color: var(--accent); }
-    .hero-sub {
-      font-size: clamp(16px, 2vw, 20px);
-      font-weight: 300;
-      color: var(--silver);
-      max-width: 540px;
-      margin: 0 auto 40px;
-      line-height: 1.6;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.9s 0.7s ease forwards;
-    }
-    .hero-actions {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.9s 0.9s ease forwards;
-    }
-    .btn-primary {
-      background: var(--white);
-      color: #000;
-      padding: 14px 32px;
-      border-radius: 30px;
-      font-size: 15px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-    .btn-primary:hover { transform: scale(1.03); opacity: 0.9; }
-    .btn-ghost {
-      background: transparent;
-      color: var(--white);
-      padding: 14px 32px;
-      border-radius: 30px;
-      font-size: 15px;
-      font-weight: 400;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.2);
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+/* Car image slot */
+.scene-car{
+  position:absolute;
+  bottom:0;left:50%;transform:translateX(-50%);
+  width:min(860px,88vw);
+  transition:transform 1s cubic-bezier(.16,1,.3,1),opacity .8s ease;
+}
+.scene-car-inner{
+  width:100%;aspect-ratio:16/7;position:relative;
+  /* Each brand gets a different gradient tint to suggest the car */
+}
+/* Brand color glow under car */
+.scene-car-inner::after{
+  content:'';position:absolute;bottom:-20px;left:10%;right:10%;height:60px;
+  filter:blur(30px);opacity:.5;border-radius:50%;
+}
+.car-vw .scene-car-inner::after{background:#0057b8}
+.car-audi .scene-car-inner::after{background:#bb0a14}
+.car-cupra .scene-car-inner::after{background:#c8a96e}
+.car-seat .scene-car-inner::after{background:#ff4500}
+.car-skoda .scene-car-inner::after{background:#4caf50}
 
-    .hero-scroll {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      opacity: 0;
-      animation: fadeUp 1s 1.4s ease forwards;
-    }
-    .hero-scroll span {
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--gray);
-      text-transform: uppercase;
-    }
-    .scroll-line {
-      width: 1px;
-      height: 40px;
-      background: linear-gradient(180deg, var(--accent), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
+/* Car body CSS (prototype) */
+.car-body{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;
+}
+.car-body strong{font-size:clamp(56px,10vw,120px);font-weight:900;letter-spacing:-.05em;opacity:.06;line-height:1}
+.car-body span{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+/* NOTE: Replace .car-body with <img src="car-photo.png"> for production */
 
-    /* ── BRANDS ── */
-    .brands-section {
-      padding: 140px 48px;
-      text-align: center;
-    }
-    .section-eyebrow {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: clamp(36px, 5vw, 60px);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.1;
-      margin-bottom: 16px;
-    }
-    .section-sub {
-      font-size: 18px;
-      color: var(--silver);
-      font-weight: 300;
-      max-width: 560px;
-      margin: 0 auto 80px;
-      line-height: 1.6;
-    }
-    .brands-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 2px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .brand-card {
-      position: relative;
-      aspect-ratio: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      cursor: pointer;
-      overflow: hidden;
-      transition: background 0.3s, border-color 0.3s;
-      text-decoration: none;
-      color: var(--white);
-      gap: 16px;
-      padding: 32px;
-    }
-    .brand-card:hover {
-      background: rgba(200,169,110,0.08);
-      border-color: rgba(200,169,110,0.3);
-    }
-    .brand-card:hover .brand-name { color: var(--accent); }
-    .brand-logo {
-      font-size: 48px;
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      line-height: 1;
-      opacity: 0.9;
-      transition: transform 0.3s;
-    }
-    .brand-card:hover .brand-logo { transform: scale(1.1); }
-    .brand-name {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--silver);
-      transition: color 0.3s;
-    }
-    .brand-tagline {
-      font-size: 10px;
-      color: var(--gray);
-      letter-spacing: 0.05em;
-      text-align: center;
-      line-height: 1.4;
-    }
+/* Text overlay in scene */
+.scene-text{
+  position:absolute;z-index:10;
+  width:100%;padding:0 10vw;
+  pointer-events:none;
+}
+.scene-text.left{text-align:left}
+.scene-text.right{text-align:right;align-self:flex-end}
+.scene-text.center{text-align:center}
 
-    /* ── FULLSCREEN BRAND FEATURE ── */
-    .brand-feature {
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-    .brand-feature-bg {
-      position: absolute;
-      inset: 0;
-    }
-    .bf-audi .brand-feature-bg {
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 50%, #0d0505 100%);
-    }
-    .bf-vw .brand-feature-bg {
-      background: linear-gradient(135deg, #070a12 0%, #0a0f1e 50%, #070a12 100%);
-    }
-    .bf-cupra .brand-feature-bg {
-      background: linear-gradient(135deg, #0d0a07 0%, #1a1005 50%, #0d0a07 100%);
-    }
-    .brand-feature-glow {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.2;
-      right: -100px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .bf-audi .brand-feature-glow { background: #cc0000; }
-    .bf-vw .brand-feature-glow { background: #0057b8; }
-    .bf-cupra .brand-feature-glow { background: #c8a96e; }
-    .brand-feature-content {
-      position: relative;
-      z-index: 2;
-      padding: 0 10vw;
-      max-width: 700px;
-    }
-    .bf-badge {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid var(--accent-dim);
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 32px;
-    }
-    .bf-title {
-      font-size: clamp(48px, 7vw, 84px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.0;
-      margin-bottom: 24px;
-    }
-    .bf-desc {
-      font-size: 18px;
-      color: var(--silver);
-      font-weight: 300;
-      line-height: 1.7;
-      margin-bottom: 40px;
-      max-width: 480px;
-    }
-    .bf-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--accent);
-      font-size: 15px;
-      font-weight: 500;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-      transition: gap 0.2s;
-    }
-    .bf-link:hover { gap: 14px; }
-    .bf-link::after { content: '→'; }
+.scene-top{top:18%;transform:translateY(0)}
+.scene-bottom{bottom:22%}
 
-    /* ── STATS ── */
-    .stats-section {
-      padding: 120px 48px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 48px;
-      max-width: 1100px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .stat-number {
-      font-size: clamp(48px, 6vw, 72px);
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 12px;
-    }
-    .stat-number span { color: var(--accent); }
-    .stat-label {
-      font-size: 13px;
-      color: var(--silver);
-      letter-spacing: 0.05em;
-      font-weight: 400;
-      line-height: 1.5;
-    }
+.st-badge{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);
+  border:1px solid rgba(200,169,110,.25);padding:5px 14px;border-radius:20px;margin-bottom:20px;
+}
+.st-title{font-size:clamp(40px,6vw,76px);font-weight:700;letter-spacing:-.035em;line-height:1.05;margin-bottom:16px}
+.st-sub{font-size:clamp(14px,1.5vw,18px);color:var(--silver);font-weight:300;line-height:1.6;max-width:440px}
+.scene-text.right .st-sub{margin-left:auto}
+.st-specs{display:flex;gap:32px;margin-top:28px;flex-wrap:wrap}
+.scene-text.right .st-specs{justify-content:flex-end}
+.spec-item{display:flex;flex-direction:column;gap:4px}
+.spec-val{font-size:28px;font-weight:700;letter-spacing:-.02em}
+.spec-val em{font-style:normal;color:var(--accent)}
+.spec-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gray)}
 
-    /* ── SERVICES ── */
-    .services-section {
-      padding: 140px 48px;
-      text-align: center;
-    }
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .service-card {
-      padding: 60px 40px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      text-align: left;
-      transition: background 0.3s, border-color 0.3s;
-      cursor: default;
-    }
-    .service-card:hover {
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.1);
-    }
-    .service-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: var(--accent-dim);
-      border: 1px solid rgba(200,169,110,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      margin-bottom: 32px;
-    }
-    .service-title {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      margin-bottom: 12px;
-    }
-    .service-desc {
-      font-size: 15px;
-      color: var(--silver);
-      line-height: 1.7;
-      font-weight: 300;
-    }
+/* Scroll progress bar */
+.progress-bar{
+  position:fixed;top:64px;left:0;right:0;height:2px;z-index:199;
+  background:rgba(255,255,255,.05);
+}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),rgba(200,169,110,.4));transition:width .1s}
 
-    /* ── EXPERIENCE ── */
-    .experience-section {
-      padding: 140px 48px;
-      background: linear-gradient(180deg, var(--black) 0%, #0f0f0f 50%, var(--black) 100%);
-    }
-    .experience-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 100px;
-      align-items: center;
-    }
-    .exp-visual {
-      position: relative;
-      aspect-ratio: 4/3;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 4px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .exp-visual-inner {
-      text-align: center;
-    }
-    .exp-visual-label {
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--gray);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    .exp-visual-big {
-      font-size: 80px;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-      color: rgba(255,255,255,0.06);
-      line-height: 1;
-    }
-    .exp-visual::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 100%, rgba(200,169,110,0.08) 0%, transparent 70%);
-    }
-    .exp-content .section-eyebrow { text-align: left; }
-    .exp-content .section-title { text-align: left; font-size: clamp(32px, 4vw, 48px); }
-    .exp-content .section-sub { text-align: left; margin: 0 0 40px; }
-    .exp-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .exp-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    .exp-item-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-top: 8px;
-      flex-shrink: 0;
-    }
-    .exp-item-text {
-      font-size: 15px;
-      color: var(--silver);
-      line-height: 1.6;
-      font-weight: 300;
-    }
-    .exp-item-text strong { color: var(--white); font-weight: 500; }
+/* Scene brand indicator */
+.brand-indicator{
+  position:fixed;right:32px;top:50%;transform:translateY(-50%);
+  z-index:199;display:flex;flex-direction:column;gap:12px;
+}
+.brand-dot{
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);
+  cursor:pointer;transition:background .3s,transform .3s;
+}
+.brand-dot.active{background:var(--accent);transform:scale(1.5)}
 
-    /* ── CAR ADVISOR ── */
-    .advisor-section {
-      padding: 160px 48px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .advisor-section::before {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 800px;
-      height: 800px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .advisor-content {
-      position: relative;
-      z-index: 1;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-    .advisor-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent-dim);
-      border: 1px solid rgba(200,169,110,0.2);
-      padding: 8px 20px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 40px;
-    }
-    .advisor-title {
-      font-size: clamp(40px, 6vw, 72px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      margin-bottom: 24px;
-    }
-    .advisor-sub {
-      font-size: 18px;
-      color: var(--silver);
-      font-weight: 300;
-      line-height: 1.7;
-      margin-bottom: 48px;
-    }
+/* ── DIVIDER QUOTE ── */
+.quote-section{
+  padding:140px 48px;text-align:center;
+  background:linear-gradient(180deg,var(--black) 0%,#0d0d0d 50%,var(--black) 100%);
+}
+.quote-mark{font-size:120px;line-height:.5;color:var(--accent);opacity:.2;font-family:Georgia,serif;margin-bottom:24px}
+.quote-text{font-size:clamp(24px,4vw,48px);font-weight:600;letter-spacing:-.02em;line-height:1.2;max-width:860px;margin:0 auto 32px;color:var(--white)}
+.quote-text span{color:var(--accent)}
+.quote-source{font-size:13px;color:var(--gray);letter-spacing:.1em;text-transform:uppercase}
 
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid rgba(255,255,255,0.08);
-      padding: 60px 48px 40px;
-    }
-    .footer-top {
-      display: grid;
-      grid-template-columns: 2fr repeat(3, 1fr);
-      gap: 48px;
-      max-width: 1100px;
-      margin: 0 auto 60px;
-    }
-    .footer-brand .nav-logo {
-      display: inline-block;
-      margin-bottom: 16px;
-    }
-    .footer-brand p {
-      font-size: 13px;
-      color: var(--gray);
-      line-height: 1.7;
-      max-width: 280px;
-    }
-    .footer-col h4 {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: 20px;
-    }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-col a {
-      font-size: 13px;
-      color: var(--gray);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-col a:hover { color: var(--silver); }
-    .footer-bottom {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding-top: 24px;
-      font-size: 12px;
-      color: var(--gray);
-    }
+/* ── STATS ── */
+.stats-section{padding:120px 48px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;max-width:1100px;margin:0 auto}
+.stat-card{padding:60px 40px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);text-align:center;transition:background .3s}
+.stat-card:hover{background:rgba(200,169,110,.04)}
+.stat-num{font-size:clamp(52px,6vw,72px);font-weight:700;letter-spacing:-.04em;color:var(--white);line-height:1;margin-bottom:12px}
+.stat-num em{font-style:normal;color:var(--accent)}
+.stat-label{font-size:13px;color:var(--silver);letter-spacing:.03em;line-height:1.5}
 
-    /* ── SCROLL REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+/* ── SERVICES ── */
+.services-section{padding:140px 48px;text-align:center}
+.section-eyebrow{font-size:11px;font-weight:600;letter-spacing:.3em;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.section-title{font-size:clamp(36px,5vw,60px);font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-bottom:16px}
+.section-sub{font-size:18px;color:var(--silver);font-weight:300;max-width:540px;margin:0 auto 80px;line-height:1.6}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1100px;margin:0 auto}
+.svc-card{padding:56px 40px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);text-align:left;transition:background .3s,border-color .3s}
+.svc-card:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+.svc-icon{font-size:28px;margin-bottom:28px;display:block}
+.svc-title{font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+.svc-desc{font-size:14px;color:var(--silver);line-height:1.7;font-weight:300}
 
-    /* ── KEYFRAMES ── */
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scrollPulse {
-      0%, 100% { opacity: 0.4; transform: scaleY(1); }
-      50% { opacity: 1; transform: scaleY(1.2); }
-    }
+/* ── HORIZONTAL MODELS STRIP ── */
+.models-strip{padding:0 0 140px;overflow:hidden}
+.models-strip-head{padding:80px 10vw 60px;text-align:center}
+.models-scroll{display:flex;gap:2px;width:max-content;padding:0 5vw}
+.model-card{
+  width:320px;flex-shrink:0;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);
+  overflow:hidden;cursor:pointer;transition:border-color .3s;
+}
+.model-card:hover{border-color:rgba(200,169,110,.3)}
+.model-thumb{
+  width:100%;aspect-ratio:16/10;background:rgba(255,255,255,.03);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+.model-thumb strong{font-size:48px;font-weight:900;letter-spacing:-.04em;color:rgba(255,255,255,.06)}
+.model-thumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(0deg,var(--black) 0%,transparent 100%)}
+.model-info{padding:24px 28px 32px}
+.model-brand{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.model-name{font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.model-price{font-size:13px;color:var(--silver)}
+.model-actions{display:flex;gap:8px;padding:0 28px 24px}
+.model-btn{flex:1;padding:10px;border-radius:20px;font-size:12px;font-weight:500;text-align:center;text-decoration:none;cursor:pointer;transition:all .2s;border:none}
+.model-btn-ghost{background:transparent;color:var(--silver);border:1px solid rgba(255,255,255,.12)}
+.model-btn-ghost:hover{border-color:rgba(255,255,255,.3);color:var(--white)}
+.model-btn-solid{background:var(--white);color:#000}
+.model-btn-solid:hover{opacity:.85}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      nav { padding: 0 24px; }
-      .nav-links { display: none; }
-      .brands-grid { grid-template-columns: repeat(3, 1fr); }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .services-grid { grid-template-columns: 1fr; }
-      .experience-inner { grid-template-columns: 1fr; gap: 48px; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
-      .brands-section, .services-section, .advisor-section { padding: 80px 24px; }
-      .brand-feature-content { padding: 0 24px; }
-    }
-  </style>
+/* ── CTA ── */
+.cta-section{
+  padding:180px 48px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--black) 0%,#0a0a0a 100%);
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,169,110,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-label{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.2);
+  padding:8px 20px;border-radius:30px;font-size:11px;font-weight:600;
+  letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:40px;
+}
+.cta-title{font-size:clamp(40px,7vw,88px);font-weight:700;letter-spacing:-.04em;line-height:1.0;margin-bottom:24px}
+.cta-sub{font-size:18px;color:var(--silver);font-weight:300;max-width:500px;margin:0 auto 52px;line-height:1.6}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid rgba(255,255,255,.08);padding:60px 48px 40px}
+.footer-top{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:48px;max-width:1100px;margin:0 auto 60px}
+.footer-brand-name{font-size:18px;font-weight:700;letter-spacing:.25em;margin-bottom:16px;display:block}
+.footer-brand p{font-size:13px;color:var(--gray);line-height:1.7;max-width:260px}
+.footer-col h4{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:20px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col a{font-size:13px;color:var(--gray);text-decoration:none;transition:color .2s}
+.footer-col a:hover{color:var(--silver)}
+.footer-bottom{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.06);padding-top:24px;font-size:12px;color:var(--gray)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.15)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes carSlideIn{from{opacity:0;transform:translateX(-50%) translateX(60px)}to{opacity:1;transform:translateX(-50%) translateX(0)}}
+@keyframes carSlideInR{from{opacity:0;transform:translateX(-50%) translateX(-60px)}to{opacity:1;transform:translateX(-50%) translateX(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 20px}.nav-links{display:none}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .services-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .brand-indicator{display:none}
+  .scene-text{padding:0 6vw}
+  .st-title{font-size:clamp(28px,8vw,52px)}
+}
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a href="#" class="nav-logo">ZENTRUM</a>
-    <ul class="nav-links">
-      <li><a href="#">Marcas</a></li>
-      <li><a href="#">Modelos</a></li>
-      <li><a href="#">Postventa</a></li>
-      <li><a href="#">Seminuevos</a></li>
-      <li><a href="#">Sucursales</a></li>
-    </ul>
-    <a href="#advisor" class="nav-cta">Car Advisor</a>
-  </nav>
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">ZENTRUM</a>
+  <ul class="nav-links">
+    <li><a href="#">Marcas</a></li>
+    <li><a href="#">Modelos</a></li>
+    <li><a href="#">Postventa</a></li>
+    <li><a href="#">Seminuevos</a></li>
+    <li><a href="#">Sucursales</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Car Advisor</a>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-car"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">El concesionario más grande de Chile</p>
-      <h1 class="hero-title">El arte<br>de <span>moverse.</span></h1>
-      <p class="hero-sub">Cinco marcas de excelencia europea. Una sola experiencia de nivel mundial.</p>
-      <div class="hero-actions">
-        <a href="#brands" class="btn-primary">Explorar marcas</a>
-        <a href="#advisor" class="btn-ghost">Hablar con un asesor</a>
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- BRAND DOTS -->
+<div class="brand-indicator" id="brandDots">
+  <div class="brand-dot active" data-scene="0" title="Intro"></div>
+  <div class="brand-dot" data-scene="1" title="Volkswagen"></div>
+  <div class="brand-dot" data-scene="2" title="Audi"></div>
+  <div class="brand-dot" data-scene="3" title="CUPRA"></div>
+  <div class="brand-dot" data-scene="4" title="Škoda"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-car-wrap">
+    <div class="hero-car-img">
+      <div class="hero-car-placeholder">
+        <!-- PRODUCTION: replace with <img src="hero-car.png" alt=""> -->
+        <strong>Z</strong>
+        <span>Foto del auto aquí · 860 × 380 px</span>
       </div>
     </div>
-    <div class="hero-scroll">
-      <span>Descubrir</span>
-      <div class="scroll-line"></div>
+  </div>
+  <div class="hero-ground"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">El concesionario más grande de Chile</p>
+    <h1 class="hero-title">El arte<br>de <em>moverse.</em></h1>
+    <p class="hero-sub">Cinco marcas de excelencia europea. Una sola experiencia de nivel mundial.</p>
+    <div class="hero-btns">
+      <a href="#showcase" class="btn-white">Explorar marcas</a>
+      <a href="#cta" class="btn-outline">Hablar con un asesor</a>
     </div>
-  </section>
+  </div>
+  <div class="hero-scroll-cue">
+    <span>Descubrir</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
 
-  <!-- BRANDS OVERVIEW -->
-  <section class="brands-section" id="brands">
-    <p class="section-eyebrow reveal">Nuestras marcas</p>
-    <h2 class="section-title reveal">Cinco marcas.<br>Una obsesión.</h2>
-    <p class="section-sub reveal">Somos el hogar oficial de las marcas del Grupo Volkswagen en Chile. Cada una con su propio carácter, todas bajo los más altos estándares.</p>
+<!-- ══════════════════════════════════════════
+     SCROLL SHOWCASE — Apple/Tesla motion
+══════════════════════════════════════════ -->
+<div class="showcase" id="showcase">
+  <div class="showcase-track" id="showcaseTrack">
+    <div class="showcase-sticky" id="showcaseSticky">
+      <div class="showcase-bg" id="showcaseBg"></div>
 
-    <div class="brands-grid">
-      <a href="#" class="brand-card reveal reveal-delay-1">
-        <div class="brand-logo">VW</div>
-        <div class="brand-name">Volkswagen</div>
-        <div class="brand-tagline">Das Auto</div>
-      </a>
-      <a href="#" class="brand-card reveal reveal-delay-2">
-        <div class="brand-logo" style="font-size:36px; letter-spacing:-0.02em;">AUDI</div>
-        <div class="brand-name">Audi</div>
-        <div class="brand-tagline">Vorsprung durch Technik</div>
-      </a>
-      <a href="#" class="brand-card reveal reveal-delay-3">
-        <div class="brand-logo" style="font-size:36px;">CUPRA</div>
-        <div class="brand-name">CUPRA</div>
-        <div class="brand-tagline">Born to be driven</div>
-      </a>
-      <a href="#" class="brand-card reveal reveal-delay-4">
-        <div class="brand-logo" style="font-size:42px; font-weight:800;">SEAT</div>
-        <div class="brand-name">SEAT</div>
-        <div class="brand-tagline">Enjoyneering</div>
-      </a>
-      <a href="#" class="brand-card reveal reveal-delay-4">
-        <div class="brand-logo" style="font-size:26px; letter-spacing:0.02em;">ŠKODA</div>
-        <div class="brand-name">Škoda</div>
-        <div class="brand-tagline">Simply Clever</div>
-      </a>
-    </div>
-  </section>
-
-  <!-- BRAND FEATURE — AUDI -->
-  <section class="brand-feature bf-audi">
-    <div class="brand-feature-bg"></div>
-    <div class="brand-feature-glow"></div>
-    <div class="brand-feature-content reveal">
-      <span class="bf-badge">Audi · Premium</span>
-      <h2 class="bf-title">Ingeniería<br>sin<br>compromiso.</h2>
-      <p class="bf-desc">Desde el Q3 hasta el e-tron GT. Rendimiento y tecnología de vanguardia, ahora más cerca que nunca.</p>
-      <a href="#" class="bf-link">Ver modelos Audi</a>
-    </div>
-  </section>
-
-  <!-- BRAND FEATURE — CUPRA -->
-  <section class="brand-feature bf-cupra">
-    <div class="brand-feature-bg"></div>
-    <div class="brand-feature-glow"></div>
-    <div class="brand-feature-content reveal">
-      <span class="bf-badge">CUPRA · Performance</span>
-      <h2 class="bf-title">Diseñado<br>para los<br>que lideran.</h2>
-      <p class="bf-desc">CUPRA nació para desafiar lo ordinario. Performance puro con una identidad visual que nadie olvida.</p>
-      <a href="#" class="bf-link">Descubrir CUPRA</a>
-    </div>
-  </section>
-
-  <!-- BRAND FEATURE — VW -->
-  <section class="brand-feature bf-vw">
-    <div class="brand-feature-bg"></div>
-    <div class="brand-feature-glow"></div>
-    <div class="brand-feature-content reveal">
-      <span class="bf-badge">Volkswagen · Iconic</span>
-      <h2 class="bf-title">El auto<br>que mueve<br>al mundo.</h2>
-      <p class="bf-desc">Décadas de confianza, diseño atemporal y tecnología alemana que nunca decepciona.</p>
-      <a href="#" class="bf-link">Explorar Volkswagen</a>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="stats-section">
-    <div class="stats-grid">
-      <div class="reveal">
-        <div class="stat-number">+<span>25</span></div>
-        <div class="stat-label">Años de experiencia<br>en Chile</div>
-      </div>
-      <div class="reveal reveal-delay-1">
-        <div class="stat-number"><span>5</span></div>
-        <div class="stat-label">Marcas premium<br>del Grupo Volkswagen</div>
-      </div>
-      <div class="reveal reveal-delay-2">
-        <div class="stat-number"><span>#1</span></div>
-        <div class="stat-label">Concesionario más grande<br>de Chile</div>
-      </div>
-      <div class="reveal reveal-delay-3">
-        <div class="stat-number">+<span>10k</span></div>
-        <div class="stat-label">Clientes que confían<br>en Zentrum</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section class="services-section">
-    <p class="section-eyebrow reveal">Servicios</p>
-    <h2 class="section-title reveal">Más allá de la venta.</h2>
-    <p class="section-sub reveal">Una experiencia completa que acompaña cada kilómetro de tu vida.</p>
-
-    <div class="services-grid">
-      <div class="service-card reveal">
-        <div class="service-icon">🔧</div>
-        <h3 class="service-title">Servicio Técnico</h3>
-        <p class="service-desc">Talleres certificados con tecnología de diagnóstico oficial. Tu vehículo en las mejores manos, siempre.</p>
-      </div>
-      <div class="service-card reveal reveal-delay-1">
-        <div class="service-icon">🚗</div>
-        <h3 class="service-title">Car Advisor</h3>
-        <p class="service-desc">Un asesor personal dedicado a encontrar el vehículo exacto para tu estilo de vida, sin presión ni apuro.</p>
-      </div>
-      <div class="service-card reveal reveal-delay-2">
-        <div class="service-icon">✦</div>
-        <h3 class="service-title">Flotas & Convenios</h3>
-        <p class="service-desc">Soluciones corporativas a medida. Renovación de flota con condiciones únicas para empresas que exigen lo mejor.</p>
-      </div>
-      <div class="service-card reveal reveal-delay-3">
-        <div class="service-icon">🔄</div>
-        <h3 class="service-title">Seminuevos Certificados</h3>
-        <p class="service-desc">Vehículos usados con garantía oficial y revisión de 120 puntos. Calidad Zentrum en cada auto.</p>
-      </div>
-      <div class="service-card reveal reveal-delay-4">
-        <div class="service-icon">🛡️</div>
-        <h3 class="service-title">Plan de Mantención</h3>
-        <p class="service-desc">Paquetes de mantención preventiva que cuidan tu inversión y mantienen la garantía de fábrica intacta.</p>
-      </div>
-      <div class="service-card reveal reveal-delay-4">
-        <div class="service-icon">📍</div>
-        <h3 class="service-title">Múltiples Sucursales</h3>
-        <p class="service-desc">Presentes en las principales ciudades de Chile. Siempre cerca, siempre con el mismo estándar.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- EXPERIENCE -->
-  <section class="experience-section">
-    <div class="experience-inner">
-      <div class="exp-visual reveal">
-        <div class="exp-visual-inner">
-          <p class="exp-visual-label">La diferencia Zentrum</p>
-          <div class="exp-visual-big">Z</div>
+      <!-- SCENE 0 — INTRO -->
+      <div class="scene active" id="scene-0">
+        <div class="scene-text center scene-top">
+          <div class="st-badge">Zentrum · 5 marcas</div>
+          <h2 class="st-title">Cinco mundos.<br>Un estándar.</h2>
+          <p class="st-sub" style="margin:0 auto">Cada marca del Grupo Volkswagen con su propia identidad. Todas bajo el servicio más exigente de Chile.</p>
+        </div>
+        <div class="scene-car car-vw">
+          <div class="scene-car-inner">
+            <div class="car-body">
+              <strong>VW</strong>
+              <span>Coloca foto del modelo aquí</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="exp-content">
-        <p class="section-eyebrow reveal">Por qué Zentrum</p>
-        <h2 class="section-title reveal">No vendemos autos.<br>Creamos momentos.</h2>
-        <p class="section-sub reveal">Desde el primer contacto hasta el último servicio, cada interacción está diseñada para superar tus expectativas.</p>
-        <ul class="exp-list">
-          <li class="exp-item reveal reveal-delay-1">
-            <div class="exp-item-dot"></div>
-            <p class="exp-item-text"><strong>Atención personalizada</strong> — Cada cliente tiene un asesor dedicado, sin turnos ni colas.</p>
-          </li>
-          <li class="exp-item reveal reveal-delay-2">
-            <div class="exp-item-dot"></div>
-            <p class="exp-item-text"><strong>Showroom de clase mundial</strong> — Espacios diseñados para vivir la marca antes de tomar la decisión.</p>
-          </li>
-          <li class="exp-item reveal reveal-delay-3">
-            <div class="exp-item-dot"></div>
-            <p class="exp-item-text"><strong>Post-venta sin igual</strong> — Seguimos contigo mucho después de que te entregamos las llaves.</p>
-          </li>
-          <li class="exp-item reveal reveal-delay-4">
-            <div class="exp-item-dot"></div>
-            <p class="exp-item-text"><strong>Transparencia total</strong> — Precios claros, procesos honestos y cero letra pequeña.</p>
-          </li>
-        </ul>
+
+      <!-- SCENE 1 — VOLKSWAGEN -->
+      <div class="scene" id="scene-1">
+        <div class="scene-text left scene-top">
+          <div class="st-badge">Volkswagen</div>
+          <h2 class="st-title">El auto<br>que mueve<br>al mundo.</h2>
+          <p class="st-sub">Diseño alemán. Confiabilidad probada. Desde el icónico Polo hasta el potente Touareg.</p>
+          <div class="st-specs">
+            <div class="spec-item">
+              <span class="spec-val">+<em>20</em></span>
+              <span class="spec-label">Modelos disponibles</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-val"><em>VW</em></span>
+              <span class="spec-label">Das Auto</span>
+            </div>
+          </div>
+        </div>
+        <div class="scene-car car-vw">
+          <div class="scene-car-inner">
+            <div class="car-body">
+              <strong>VW</strong>
+              <span>Foto VW · ej: Tiguan 2025</span>
+            </div>
+          </div>
+        </div>
+        <div class="scene-text right scene-bottom" style="position:absolute;right:0;bottom:22%;text-align:right;padding-right:10vw">
+          <a href="#" style="color:var(--accent);font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px">Ver modelos Volkswagen <span>→</span></a>
+        </div>
+      </div>
+
+      <!-- SCENE 2 — AUDI -->
+      <div class="scene" id="scene-2">
+        <div class="scene-text right scene-top" style="text-align:right">
+          <div class="st-badge" style="float:right;clear:both">Audi · Premium</div>
+          <h2 class="st-title" style="clear:both">Ingeniería<br>sin<br>compromiso.</h2>
+          <p class="st-sub" style="margin-left:auto">Desde el Q3 hasta el e-tron GT. Rendimiento y tecnología quattro que redefine cada camino.</p>
+          <div class="st-specs" style="justify-content:flex-end">
+            <div class="spec-item" style="text-align:right">
+              <span class="spec-val"><em>quattro</em></span>
+              <span class="spec-label">Tracción integral</span>
+            </div>
+            <div class="spec-item" style="text-align:right">
+              <span class="spec-val">100<em>%</em></span>
+              <span class="spec-label">Eléctrico disponible</span>
+            </div>
+          </div>
+        </div>
+        <div class="scene-car car-audi">
+          <div class="scene-car-inner">
+            <div class="car-body">
+              <strong>AUDI</strong>
+              <span>Foto Audi · ej: Q5 2025</span>
+            </div>
+          </div>
+        </div>
+        <div class="scene-text left scene-bottom" style="position:absolute;left:0;bottom:22%;padding-left:10vw">
+          <a href="#" style="color:var(--accent);font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px">Ver modelos Audi <span>→</span></a>
+        </div>
+      </div>
+
+      <!-- SCENE 3 — CUPRA -->
+      <div class="scene" id="scene-3">
+        <div class="scene-text left scene-top">
+          <div class="st-badge">CUPRA · Performance</div>
+          <h2 class="st-title">Diseñado<br>para los<br>que lideran.</h2>
+          <p class="st-sub">CUPRA nació para desafiar lo ordinario. Performance puro con una identidad visual que nadie olvida.</p>
+          <div class="st-specs">
+            <div class="spec-item">
+              <span class="spec-val">300<em>+</em></span>
+              <span class="spec-label">CV disponibles</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-val"><em>Born</em></span>
+              <span class="spec-label">100% eléctrico</span>
+            </div>
+          </div>
+        </div>
+        <div class="scene-car car-cupra">
+          <div class="scene-car-inner">
+            <div class="car-body">
+              <strong>CUPRA</strong>
+              <span>Foto CUPRA · ej: Formentor 2025</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 4 — SKODA -->
+      <div class="scene" id="scene-4">
+        <div class="scene-text center scene-top">
+          <div class="st-badge">Škoda · Simply Clever</div>
+          <h2 class="st-title">Inteligencia<br>en cada detalle.</h2>
+          <p class="st-sub" style="margin:0 auto">Škoda reinventa la practicidad con tecnología de punta y el espacio más generoso del segmento.</p>
+        </div>
+        <div class="scene-car car-skoda">
+          <div class="scene-car-inner">
+            <div class="car-body">
+              <strong>ŠKODA</strong>
+              <span>Foto Škoda · ej: Kodiaq 2025</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sticky -->
+  </div><!-- /track -->
+</div><!-- /showcase -->
+
+<!-- ══════════════════════════════════════════
+     QUOTE
+══════════════════════════════════════════ -->
+<section class="quote-section">
+  <div class="quote-mark reveal">"</div>
+  <blockquote class="quote-text reveal">No vendemos autos.<br>Creamos la experiencia de <span>manejar algo extraordinario.</span></blockquote>
+  <p class="quote-source reveal">— Zentrum · Chile</p>
+</section>
+
+<!-- ══════════════════════════════════════════
+     STATS
+══════════════════════════════════════════ -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <div class="stat-num">+<em>25</em></div>
+      <div class="stat-label">Años de experiencia<br>en el mercado chileno</div>
+    </div>
+    <div class="stat-card reveal d1">
+      <div class="stat-num"><em>5</em></div>
+      <div class="stat-label">Marcas premium<br>del Grupo Volkswagen</div>
+    </div>
+    <div class="stat-card reveal d2">
+      <div class="stat-num"><em>#1</em></div>
+      <div class="stat-label">Concesionario más grande<br>de Chile</div>
+    </div>
+    <div class="stat-card reveal d3">
+      <div class="stat-num">+<em>10k</em></div>
+      <div class="stat-label">Clientes satisfechos<br>a lo largo de Chile</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MODELS STRIP (horizontal)
+══════════════════════════════════════════ -->
+<section class="models-strip" id="models">
+  <div class="models-strip-head">
+    <p class="section-eyebrow reveal">Modelos destacados</p>
+    <h2 class="section-title reveal">Encuentra el tuyo.</h2>
+    <p class="section-sub reveal">Una selección de nuestros modelos más populares. Todos disponibles para test drive en Zentrum.</p>
+  </div>
+  <div class="models-scroll" id="modelsScroll">
+    <!-- VW Tiguan -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>TIGUAN</strong></div>
+      <div class="model-info">
+        <div class="model-brand">Volkswagen</div>
+        <div class="model-name">New Tiguan</div>
+        <div class="model-price">Desde $34.490.000</div>
+      </div>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
       </div>
     </div>
-  </section>
-
-  <!-- CAR ADVISOR CTA -->
-  <section class="advisor-section" id="advisor">
-    <div class="advisor-content">
-      <div class="advisor-label reveal">
-        <span>★</span> Car Advisor
+    <!-- Audi Q5 -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>Q5</strong></div>
+      <div class="model-info">
+        <div class="model-brand">Audi</div>
+        <div class="model-name">New Q5</div>
+        <div class="model-price">Desde $52.900.000</div>
       </div>
-      <h2 class="advisor-title reveal">Tu próximo auto<br>te está esperando.</h2>
-      <p class="advisor-sub reveal">Nuestros especialistas están listos para guiarte hacia el vehículo perfecto. Sin presión. Solo la mejor experiencia.</p>
-      <div class="hero-actions reveal" style="justify-content:center;">
-        <a href="#" class="btn-primary">Agendar con un asesor</a>
-        <a href="#" class="btn-ghost">Ver todos los modelos</a>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
       </div>
     </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="#" class="nav-logo">ZENTRUM</a>
-        <p>El concesionario más grande de Chile para Volkswagen, Audi, CUPRA, SEAT y Škoda. Experiencia premium desde hace más de 25 años.</p>
+    <!-- CUPRA Formentor -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>FORMENTOR</strong></div>
+      <div class="model-info">
+        <div class="model-brand">CUPRA</div>
+        <div class="model-name">Formentor VZ</div>
+        <div class="model-price">Desde $42.900.000</div>
       </div>
-      <div class="footer-col">
-        <h4>Marcas</h4>
-        <ul>
-          <li><a href="#">Volkswagen</a></li>
-          <li><a href="#">Audi</a></li>
-          <li><a href="#">CUPRA</a></li>
-          <li><a href="#">SEAT</a></li>
-          <li><a href="#">Škoda</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Servicios</h4>
-        <ul>
-          <li><a href="#">Postventa</a></li>
-          <li><a href="#">Seminuevos</a></li>
-          <li><a href="#">Flotas</a></li>
-          <li><a href="#">Car Advisor</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Zentrum</h4>
-        <ul>
-          <li><a href="#">Sucursales</a></li>
-          <li><a href="#">Trabaja con nosotros</a></li>
-          <li><a href="#">Contacto</a></li>
-        </ul>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 Zentrum. Todos los derechos reservados.</span>
-      <span>Concesionario Oficial Grupo Volkswagen — Chile</span>
+    <!-- Skoda Kodiaq -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>KODIAQ</strong></div>
+      <div class="model-info">
+        <div class="model-brand">Škoda</div>
+        <div class="model-name">Kodiaq</div>
+        <div class="model-price">Desde $32.990.000</div>
+      </div>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
+      </div>
     </div>
-  </footer>
+    <!-- SEAT Ateca -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>ATECA</strong></div>
+      <div class="model-info">
+        <div class="model-brand">SEAT</div>
+        <div class="model-name">Ateca</div>
+        <div class="model-price">Desde $28.990.000</div>
+      </div>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
+      </div>
+    </div>
+    <!-- Audi A3 -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>A3</strong></div>
+      <div class="model-info">
+        <div class="model-brand">Audi</div>
+        <div class="model-name">A3 Sedan</div>
+        <div class="model-price">Desde $38.900.000</div>
+      </div>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
+      </div>
+    </div>
+    <!-- VW Polo -->
+    <div class="model-card">
+      <div class="model-thumb"><strong>POLO</strong></div>
+      <div class="model-info">
+        <div class="model-brand">Volkswagen</div>
+        <div class="model-name">Polo Track</div>
+        <div class="model-price">Desde $11.990.000</div>
+      </div>
+      <div class="model-actions">
+        <a href="#" class="model-btn model-btn-ghost">Ver más</a>
+        <a href="#" class="model-btn model-btn-solid">Cotizar</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <script>
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    reveals.forEach(el => observer.observe(el));
+<!-- ══════════════════════════════════════════
+     SERVICES
+══════════════════════════════════════════ -->
+<section class="services-section">
+  <p class="section-eyebrow reveal">Servicios</p>
+  <h2 class="section-title reveal">Más allá de la venta.</h2>
+  <p class="section-sub reveal">Una experiencia completa que acompaña cada kilómetro de tu vida.</p>
+  <div class="services-grid">
+    <div class="svc-card reveal">
+      <span class="svc-icon">🔧</span>
+      <h3 class="svc-title">Servicio Técnico</h3>
+      <p class="svc-desc">Talleres certificados con tecnología de diagnóstico oficial. Tu vehículo siempre en las mejores manos.</p>
+    </div>
+    <div class="svc-card reveal d1">
+      <span class="svc-icon">🌟</span>
+      <h3 class="svc-title">Car Advisor</h3>
+      <p class="svc-desc">Un asesor personal dedicado a encontrar el vehículo exacto para tu estilo de vida, sin presión.</p>
+    </div>
+    <div class="svc-card reveal d2">
+      <span class="svc-icon">🏢</span>
+      <h3 class="svc-title">Flotas & Convenios</h3>
+      <p class="svc-desc">Soluciones corporativas a medida. Condiciones únicas para empresas que exigen lo mejor.</p>
+    </div>
+    <div class="svc-card reveal d3">
+      <span class="svc-icon">🔄</span>
+      <h3 class="svc-title">Seminuevos Certificados</h3>
+      <p class="svc-desc">Vehículos usados con garantía oficial y revisión de 120 puntos. Calidad Zentrum garantizada.</p>
+    </div>
+    <div class="svc-card reveal d4">
+      <span class="svc-icon">🛡️</span>
+      <h3 class="svc-title">Plan de Mantención</h3>
+      <p class="svc-desc">Paquetes preventivos que cuidan tu inversión y mantienen la garantía de fábrica intacta.</p>
+    </div>
+    <div class="svc-card reveal d4">
+      <span class="svc-icon">📍</span>
+      <h3 class="svc-title">Múltiples Sucursales</h3>
+      <p class="svc-desc">Presentes en las principales ciudades de Chile. Siempre cerca, siempre con el mismo estándar premium.</p>
+    </div>
+  </div>
+</section>
 
-    // Nav background on scroll
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.background = window.scrollY > 80
-        ? 'rgba(7,7,7,0.95)'
-        : 'rgba(7,7,7,0.72)';
-    });
-  </script>
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="cta-section" id="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-label reveal">★ Car Advisor — Zentrum</div>
+  <h2 class="cta-title reveal">Tu próximo auto<br>te está esperando.</h2>
+  <p class="cta-sub reveal">Nuestros especialistas están listos para guiarte hacia el vehículo perfecto. Sin presión. Solo la mejor experiencia.</p>
+  <div class="hero-btns reveal">
+    <a href="#" class="btn-white">Agendar con un asesor</a>
+    <a href="#" class="btn-outline">Ver todos los modelos</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-brand-name">ZENTRUM</span>
+      <p>El concesionario más grande de Chile para Volkswagen, Audi, CUPRA, SEAT y Škoda. Experiencia premium desde hace más de 25 años.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Marcas</h4>
+      <ul>
+        <li><a href="#">Volkswagen</a></li>
+        <li><a href="#">Audi</a></li>
+        <li><a href="#">CUPRA</a></li>
+        <li><a href="#">SEAT</a></li>
+        <li><a href="#">Škoda</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Servicios</h4>
+      <ul>
+        <li><a href="#">Postventa</a></li>
+        <li><a href="#">Seminuevos</a></li>
+        <li><a href="#">Flotas</a></li>
+        <li><a href="#">Car Advisor</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Zentrum</h4>
+      <ul>
+        <li><a href="#">Sucursales</a></li>
+        <li><a href="#">Trabaja con nosotros</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Zentrum. Todos los derechos reservados.</span>
+    <span>Concesionario Oficial Grupo Volkswagen — Chile</span>
+  </div>
+</footer>
+
+<script>
+// ── Scroll-driven showcase (the Apple/Tesla effect) ──
+const track = document.getElementById('showcaseTrack');
+const bg    = document.getElementById('showcaseBg');
+const scenes = document.querySelectorAll('.scene');
+const dots   = document.querySelectorAll('.brand-dot');
+const totalScenes = scenes.length;
+
+const bgColors = [
+  'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,169,110,.05) 0%, transparent 70%), linear-gradient(180deg,#070707 0%,#0d0d0d 100%)',
+  'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,87,184,.06) 0%, transparent 70%), linear-gradient(180deg,#070a12 0%,#0a0f1a 100%)',
+  'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(187,10,20,.07) 0%, transparent 70%), linear-gradient(180deg,#0a0707 0%,#120808 100%)',
+  'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,169,110,.08) 0%, transparent 70%), linear-gradient(180deg,#0d0a07 0%,#120e08 100%)',
+  'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(76,175,80,.05) 0%, transparent 70%), linear-gradient(180deg,#07100a 0%,#0a120c 100%)',
+];
+
+let currentScene = 0;
+
+function setScene(idx) {
+  if (idx === currentScene) return;
+  scenes[currentScene].classList.remove('active');
+  dots[currentScene]?.classList.remove('active');
+  currentScene = idx;
+  scenes[currentScene].classList.add('active');
+  dots[currentScene]?.classList.add('active');
+  bg.style.background = bgColors[currentScene] || bgColors[0];
+}
+
+function updateShowcase() {
+  const rect  = track.getBoundingClientRect();
+  const trackH = track.offsetHeight;
+  const viewH  = window.innerHeight;
+  // progress 0→1 through the track
+  const progress = Math.max(0, Math.min(1, -rect.top / (trackH - viewH)));
+  const sceneIdx = Math.min(totalScenes - 1, Math.floor(progress * totalScenes));
+  setScene(sceneIdx);
+}
+
+// Dots click
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const idx = parseInt(dot.dataset.scene);
+    const trackH = track.offsetHeight;
+    const viewH  = window.innerHeight;
+    const targetY = track.offsetTop + (idx / totalScenes) * (trackH - viewH) + 1;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  });
+});
+
+// ── Progress bar ──
+const fill = document.getElementById('progressFill');
+function updateProgress() {
+  const docH   = document.documentElement.scrollHeight - window.innerHeight;
+  const pct    = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+  fill.style.width = pct + '%';
+}
+
+// ── Nav ──
+const nav = document.getElementById('nav');
+function updateNav() {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}
+
+// ── Scroll reveal ──
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+}, { threshold: 0.12 });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ── Models drag to scroll ──
+const ms = document.getElementById('modelsScroll');
+let isDragging = false, startX, scrollLeft;
+ms.addEventListener('mousedown', e => { isDragging = true; startX = e.pageX - ms.offsetLeft; scrollLeft = ms.scrollLeft; ms.style.cursor = 'grabbing'; });
+ms.addEventListener('mouseleave', () => { isDragging = false; ms.style.cursor = 'grab'; });
+ms.addEventListener('mouseup', () => { isDragging = false; ms.style.cursor = 'grab'; });
+ms.addEventListener('mousemove', e => { if(!isDragging) return; e.preventDefault(); const x = e.pageX - ms.offsetLeft; ms.scrollLeft = scrollLeft - (x - startX) * 1.5; });
+ms.style.cursor = 'grab'; ms.style.userSelect = 'none'; ms.style.overflowX = 'auto'; ms.style.scrollbarWidth = 'none';
+
+// ── RAF loop ──
+function onScroll() { updateProgress(); updateNav(); updateShowcase(); }
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+</script>
 </body>
 </html>
