@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZENTRUM — El Arte de Moverse</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #070707;
+      --white: #f5f5f7;
+      --gray: #6e6e73;
+      --silver: #a1a1a6;
+      --accent: #c8a96e;
+      --accent-dim: rgba(200,169,110,0.15);
+      --font: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(7,7,7,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--silver);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--accent);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 70%, rgba(200,169,110,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(200,169,110,0.05) 0%, transparent 60%),
+        linear-gradient(180deg, #070707 0%, #0d0d0d 50%, #070707 100%);
+    }
+    /* Simulated cinematic car silhouette using CSS */
+    .hero-car {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 320px;
+      background: linear-gradient(180deg, transparent 0%, rgba(200,169,110,0.03) 100%);
+      /* In production: replace with actual hero car image */
+    }
+    .hero-car::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      filter: blur(2px);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding-bottom: 80px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.3s ease forwards;
+    }
+    .hero-title {
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.9s 0.5s ease forwards;
+    }
+    .hero-title span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--silver);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.9s 0.7s ease forwards;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.9s 0.9s ease forwards;
+    }
+    .btn-primary {
+      background: var(--white);
+      color: #000;
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .btn-primary:hover { transform: scale(1.03); opacity: 0.9; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 400;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp 1s 1.4s ease forwards;
+    }
+    .hero-scroll span {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* ── BRANDS ── */
+    .brands-section {
+      padding: 140px 48px;
+      text-align: center;
+    }
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 18px;
+      color: var(--silver);
+      font-weight: 300;
+      max-width: 560px;
+      margin: 0 auto 80px;
+      line-height: 1.6;
+    }
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .brand-card {
+      position: relative;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      overflow: hidden;
+      transition: background 0.3s, border-color 0.3s;
+      text-decoration: none;
+      color: var(--white);
+      gap: 16px;
+      padding: 32px;
+    }
+    .brand-card:hover {
+      background: rgba(200,169,110,0.08);
+      border-color: rgba(200,169,110,0.3);
+    }
+    .brand-card:hover .brand-name { color: var(--accent); }
+    .brand-logo {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      opacity: 0.9;
+      transition: transform 0.3s;
+    }
+    .brand-card:hover .brand-logo { transform: scale(1.1); }
+    .brand-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--silver);
+      transition: color 0.3s;
+    }
+    .brand-tagline {
+      font-size: 10px;
+      color: var(--gray);
+      letter-spacing: 0.05em;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── FULLSCREEN BRAND FEATURE ── */
+    .brand-feature {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .brand-feature-bg {
+      position: absolute;
+      inset: 0;
+    }
+    .bf-audi .brand-feature-bg {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 50%, #0d0505 100%);
+    }
+    .bf-vw .brand-feature-bg {
+      background: linear-gradient(135deg, #070a12 0%, #0a0f1e 50%, #070a12 100%);
+    }
+    .bf-cupra .brand-feature-bg {
+      background: linear-gradient(135deg, #0d0a07 0%, #1a1005 50%, #0d0a07 100%);
+    }
+    .brand-feature-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.2;
+      right: -100px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .bf-audi .brand-feature-glow { background: #cc0000; }
+    .bf-vw .brand-feature-glow { background: #0057b8; }
+    .bf-cupra .brand-feature-glow { background: #c8a96e; }
+    .brand-feature-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 10vw;
+      max-width: 700px;
+    }
+    .bf-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 32px;
+    }
+    .bf-title {
+      font-size: clamp(48px, 7vw, 84px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      margin-bottom: 24px;
+    }
+    .bf-desc {
+      font-size: 18px;
+      color: var(--silver);
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 480px;
+    }
+    .bf-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: gap 0.2s;
+    }
+    .bf-link:hover { gap: 14px; }
+    .bf-link::after { content: '→'; }
+
+    /* ── STATS ── */
+    .stats-section {
+      padding: 120px 48px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: clamp(48px, 6vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .stat-number span { color: var(--accent); }
+    .stat-label {
+      font-size: 13px;
+      color: var(--silver);
+      letter-spacing: 0.05em;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* ── SERVICES ── */
+    .services-section {
+      padding: 140px 48px;
+      text-align: center;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .service-card {
+      padding: 60px 40px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      text-align: left;
+      transition: background 0.3s, border-color 0.3s;
+      cursor: default;
+    }
+    .service-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.1);
+    }
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,169,110,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 32px;
+    }
+    .service-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+    .service-desc {
+      font-size: 15px;
+      color: var(--silver);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── EXPERIENCE ── */
+    .experience-section {
+      padding: 140px 48px;
+      background: linear-gradient(180deg, var(--black) 0%, #0f0f0f 50%, var(--black) 100%);
+    }
+    .experience-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+    .exp-visual {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .exp-visual-inner {
+      text-align: center;
+    }
+    .exp-visual-label {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .exp-visual-big {
+      font-size: 80px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: rgba(255,255,255,0.06);
+      line-height: 1;
+    }
+    .exp-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(200,169,110,0.08) 0%, transparent 70%);
+    }
+    .exp-content .section-eyebrow { text-align: left; }
+    .exp-content .section-title { text-align: left; font-size: clamp(32px, 4vw, 48px); }
+    .exp-content .section-sub { text-align: left; margin: 0 0 40px; }
+    .exp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .exp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .exp-item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .exp-item-text {
+      font-size: 15px;
+      color: var(--silver);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .exp-item-text strong { color: var(--white); font-weight: 500; }
+
+    /* ── CAR ADVISOR ── */
+    .advisor-section {
+      padding: 160px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .advisor-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .advisor-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .advisor-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,169,110,0.2);
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .advisor-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    .advisor-sub {
+      font-size: 18px;
+      color: var(--silver);
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 60px 48px 40px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 48px;
+      max-width: 1100px;
+      margin: 0 auto 60px;
+    }
+    .footer-brand .nav-logo {
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+    .footer-brand p {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a {
+      font-size: 13px;
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--silver); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 24px;
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .brands-grid { grid-template-columns: repeat(3, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .services-grid { grid-template-columns: 1fr; }
+      .experience-inner { grid-template-columns: 1fr; gap: 48px; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .brands-section, .services-section, .advisor-section { padding: 80px 24px; }
+      .brand-feature-content { padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">ZENTRUM</a>
+    <ul class="nav-links">
+      <li><a href="#">Marcas</a></li>
+      <li><a href="#">Modelos</a></li>
+      <li><a href="#">Postventa</a></li>
+      <li><a href="#">Seminuevos</a></li>
+      <li><a href="#">Sucursales</a></li>
+    </ul>
+    <a href="#advisor" class="nav-cta">Car Advisor</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-car"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">El concesionario más grande de Chile</p>
+      <h1 class="hero-title">El arte<br>de <span>moverse.</span></h1>
+      <p class="hero-sub">Cinco marcas de excelencia europea. Una sola experiencia de nivel mundial.</p>
+      <div class="hero-actions">
+        <a href="#brands" class="btn-primary">Explorar marcas</a>
+        <a href="#advisor" class="btn-ghost">Hablar con un asesor</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Descubrir</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- BRANDS OVERVIEW -->
+  <section class="brands-section" id="brands">
+    <p class="section-eyebrow reveal">Nuestras marcas</p>
+    <h2 class="section-title reveal">Cinco marcas.<br>Una obsesión.</h2>
+    <p class="section-sub reveal">Somos el hogar oficial de las marcas del Grupo Volkswagen en Chile. Cada una con su propio carácter, todas bajo los más altos estándares.</p>
+
+    <div class="brands-grid">
+      <a href="#" class="brand-card reveal reveal-delay-1">
+        <div class="brand-logo">VW</div>
+        <div class="brand-name">Volkswagen</div>
+        <div class="brand-tagline">Das Auto</div>
+      </a>
+      <a href="#" class="brand-card reveal reveal-delay-2">
+        <div class="brand-logo" style="font-size:36px; letter-spacing:-0.02em;">AUDI</div>
+        <div class="brand-name">Audi</div>
+        <div class="brand-tagline">Vorsprung durch Technik</div>
+      </a>
+      <a href="#" class="brand-card reveal reveal-delay-3">
+        <div class="brand-logo" style="font-size:36px;">CUPRA</div>
+        <div class="brand-name">CUPRA</div>
+        <div class="brand-tagline">Born to be driven</div>
+      </a>
+      <a href="#" class="brand-card reveal reveal-delay-4">
+        <div class="brand-logo" style="font-size:42px; font-weight:800;">SEAT</div>
+        <div class="brand-name">SEAT</div>
+        <div class="brand-tagline">Enjoyneering</div>
+      </a>
+      <a href="#" class="brand-card reveal reveal-delay-4">
+        <div class="brand-logo" style="font-size:26px; letter-spacing:0.02em;">ŠKODA</div>
+        <div class="brand-name">Škoda</div>
+        <div class="brand-tagline">Simply Clever</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- BRAND FEATURE — AUDI -->
+  <section class="brand-feature bf-audi">
+    <div class="brand-feature-bg"></div>
+    <div class="brand-feature-glow"></div>
+    <div class="brand-feature-content reveal">
+      <span class="bf-badge">Audi · Premium</span>
+      <h2 class="bf-title">Ingeniería<br>sin<br>compromiso.</h2>
+      <p class="bf-desc">Desde el Q3 hasta el e-tron GT. Rendimiento y tecnología de vanguardia, ahora más cerca que nunca.</p>
+      <a href="#" class="bf-link">Ver modelos Audi</a>
+    </div>
+  </section>
+
+  <!-- BRAND FEATURE — CUPRA -->
+  <section class="brand-feature bf-cupra">
+    <div class="brand-feature-bg"></div>
+    <div class="brand-feature-glow"></div>
+    <div class="brand-feature-content reveal">
+      <span class="bf-badge">CUPRA · Performance</span>
+      <h2 class="bf-title">Diseñado<br>para los<br>que lideran.</h2>
+      <p class="bf-desc">CUPRA nació para desafiar lo ordinario. Performance puro con una identidad visual que nadie olvida.</p>
+      <a href="#" class="bf-link">Descubrir CUPRA</a>
+    </div>
+  </section>
+
+  <!-- BRAND FEATURE — VW -->
+  <section class="brand-feature bf-vw">
+    <div class="brand-feature-bg"></div>
+    <div class="brand-feature-glow"></div>
+    <div class="brand-feature-content reveal">
+      <span class="bf-badge">Volkswagen · Iconic</span>
+      <h2 class="bf-title">El auto<br>que mueve<br>al mundo.</h2>
+      <p class="bf-desc">Décadas de confianza, diseño atemporal y tecnología alemana que nunca decepciona.</p>
+      <a href="#" class="bf-link">Explorar Volkswagen</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="reveal">
+        <div class="stat-number">+<span>25</span></div>
+        <div class="stat-label">Años de experiencia<br>en Chile</div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="stat-number"><span>5</span></div>
+        <div class="stat-label">Marcas premium<br>del Grupo Volkswagen</div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="stat-number"><span>#1</span></div>
+        <div class="stat-label">Concesionario más grande<br>de Chile</div>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <div class="stat-number">+<span>10k</span></div>
+        <div class="stat-label">Clientes que confían<br>en Zentrum</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services-section">
+    <p class="section-eyebrow reveal">Servicios</p>
+    <h2 class="section-title reveal">Más allá de la venta.</h2>
+    <p class="section-sub reveal">Una experiencia completa que acompaña cada kilómetro de tu vida.</p>
+
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">🔧</div>
+        <h3 class="service-title">Servicio Técnico</h3>
+        <p class="service-desc">Talleres certificados con tecnología de diagnóstico oficial. Tu vehículo en las mejores manos, siempre.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon">🚗</div>
+        <h3 class="service-title">Car Advisor</h3>
+        <p class="service-desc">Un asesor personal dedicado a encontrar el vehículo exacto para tu estilo de vida, sin presión ni apuro.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon">✦</div>
+        <h3 class="service-title">Flotas & Convenios</h3>
+        <p class="service-desc">Soluciones corporativas a medida. Renovación de flota con condiciones únicas para empresas que exigen lo mejor.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-icon">🔄</div>
+        <h3 class="service-title">Seminuevos Certificados</h3>
+        <p class="service-desc">Vehículos usados con garantía oficial y revisión de 120 puntos. Calidad Zentrum en cada auto.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-4">
+        <div class="service-icon">🛡️</div>
+        <h3 class="service-title">Plan de Mantención</h3>
+        <p class="service-desc">Paquetes de mantención preventiva que cuidan tu inversión y mantienen la garantía de fábrica intacta.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-4">
+        <div class="service-icon">📍</div>
+        <h3 class="service-title">Múltiples Sucursales</h3>
+        <p class="service-desc">Presentes en las principales ciudades de Chile. Siempre cerca, siempre con el mismo estándar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="experience-section">
+    <div class="experience-inner">
+      <div class="exp-visual reveal">
+        <div class="exp-visual-inner">
+          <p class="exp-visual-label">La diferencia Zentrum</p>
+          <div class="exp-visual-big">Z</div>
+        </div>
+      </div>
+      <div class="exp-content">
+        <p class="section-eyebrow reveal">Por qué Zentrum</p>
+        <h2 class="section-title reveal">No vendemos autos.<br>Creamos momentos.</h2>
+        <p class="section-sub reveal">Desde el primer contacto hasta el último servicio, cada interacción está diseñada para superar tus expectativas.</p>
+        <ul class="exp-list">
+          <li class="exp-item reveal reveal-delay-1">
+            <div class="exp-item-dot"></div>
+            <p class="exp-item-text"><strong>Atención personalizada</strong> — Cada cliente tiene un asesor dedicado, sin turnos ni colas.</p>
+          </li>
+          <li class="exp-item reveal reveal-delay-2">
+            <div class="exp-item-dot"></div>
+            <p class="exp-item-text"><strong>Showroom de clase mundial</strong> — Espacios diseñados para vivir la marca antes de tomar la decisión.</p>
+          </li>
+          <li class="exp-item reveal reveal-delay-3">
+            <div class="exp-item-dot"></div>
+            <p class="exp-item-text"><strong>Post-venta sin igual</strong> — Seguimos contigo mucho después de que te entregamos las llaves.</p>
+          </li>
+          <li class="exp-item reveal reveal-delay-4">
+            <div class="exp-item-dot"></div>
+            <p class="exp-item-text"><strong>Transparencia total</strong> — Precios claros, procesos honestos y cero letra pequeña.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAR ADVISOR CTA -->
+  <section class="advisor-section" id="advisor">
+    <div class="advisor-content">
+      <div class="advisor-label reveal">
+        <span>★</span> Car Advisor
+      </div>
+      <h2 class="advisor-title reveal">Tu próximo auto<br>te está esperando.</h2>
+      <p class="advisor-sub reveal">Nuestros especialistas están listos para guiarte hacia el vehículo perfecto. Sin presión. Solo la mejor experiencia.</p>
+      <div class="hero-actions reveal" style="justify-content:center;">
+        <a href="#" class="btn-primary">Agendar con un asesor</a>
+        <a href="#" class="btn-ghost">Ver todos los modelos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">ZENTRUM</a>
+        <p>El concesionario más grande de Chile para Volkswagen, Audi, CUPRA, SEAT y Škoda. Experiencia premium desde hace más de 25 años.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Marcas</h4>
+        <ul>
+          <li><a href="#">Volkswagen</a></li>
+          <li><a href="#">Audi</a></li>
+          <li><a href="#">CUPRA</a></li>
+          <li><a href="#">SEAT</a></li>
+          <li><a href="#">Škoda</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#">Postventa</a></li>
+          <li><a href="#">Seminuevos</a></li>
+          <li><a href="#">Flotas</a></li>
+          <li><a href="#">Car Advisor</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Zentrum</h4>
+        <ul>
+          <li><a href="#">Sucursales</a></li>
+          <li><a href="#">Trabaja con nosotros</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Zentrum. Todos los derechos reservados.</span>
+      <span>Concesionario Oficial Grupo Volkswagen — Chile</span>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Nav background on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 80
+        ? 'rgba(7,7,7,0.95)'
+        : 'rgba(7,7,7,0.72)';
+    });
+  </script>
+</body>
+</html>
