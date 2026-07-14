@@ -29,6 +29,7 @@ genérico y Venpu por ser un canal más que un sistema.
 | **Cotizaciones y ventas** | Cotización PDF con branding, registro de venta (forma de pago, parte de pago, financiamiento), nota de venta. |
 | **Reportes automáticos** | Dashboard: ventas del mes, margen por vehículo, días en stock, conversión por canal, ranking de vendedores. Cierre mensual automático por correo/PDF. |
 | **WhatsApp** | Bandeja de conversaciones vía WhatsApp Cloud API, vinculada al lead y al vehículo. |
+| **Autocalificación de leads (IA)** | Cada lead se puntúa y clasifica automáticamente (caliente/tibio/frío) a partir de la conversación (WhatsApp, formularios) y su comportamiento (portal de origen, vehículo consultado, presupuesto, urgencia detectada). El pipeline se mueve solo: el agente detecta intención ("¿tienen financiamiento?", "¿puedo ir a verlo hoy?") y avanza la etapa, asigna prioridad y alerta al vendedor. Cola diaria "leads calientes de hoy" por vendedor. |
 
 ### Fase 2 — Producto (vender a más automotoras)
 
@@ -42,6 +43,50 @@ genérico y Venpu por ser un canal más que un sistema.
   contabilidad completa — reportería financiera sí, contabilidad tributaria se
   integra o se exporta al contador.
 - Portal de firmas/documentos (transferencia, mandatos), integración financieras.
+
+## 2b. Vacíos de Venpu — dónde ser "Venpu con esteroides"
+
+Venpu es marketplace-first: sus herramientas B2B existen para alimentar su propio
+portal. Eso deja vacíos estructurales que un sistema operativo de automotora sí cubre:
+
+1. **Operación interna completa**: costos por vehículo, consignaciones, comisiones de
+   vendedores, preparación/taller, márgenes reales. Venpu ve el aviso; nosotros vemos
+   el negocio.
+2. **Neutralidad de canal**: publicamos en *todos* los portales (Chileautos, MELI,
+   sitio propio y eventualmente Venpu mismo como un canal más). Venpu nunca va a
+   publicar en su competencia.
+3. **La data del lead es del cliente**: conversaciones, historial y audiencias viven
+   en la automotora, no en el ecosistema del portal → remarketing propio en Meta con
+   esa data (audiencias personalizadas desde el CRM).
+4. **Post-venta y ciclo de vida**: garantías, seguimiento, campaña de recompra a los
+   2–3 años, referidos. Nadie en el nicho lo trabaja bien y es venta recurrente
+   gratis para la automotora.
+5. **Toma de parte de pago / tasación**: flujo de trade-in con tasación asistida por
+   IA (referencias de mercado + estado del vehículo) — alimenta el inventario solo.
+6. **Financiero/tributario**: DTE, cierres mensuales, reportería — Venpu no toca esto.
+7. **Agente IA operativo 24/7**: no solo califica; responde de madrugada, agenda
+   visitas, redacta avisos, arma campañas. El vendedor llega en la mañana con la
+   pega pre-masticada.
+
+## 2c. Núcleo multi-vertical (futuro: real estate y otros)
+
+El patrón de fondo es genérico: **inventario de activos de alto valor + leads
+multicanal + publicación en portales + agente IA**. Automotora y corretaje de
+propiedades son el mismo esqueleto con distinto vocabulario:
+
+| Núcleo | Automotora | Real estate |
+|---|---|---|
+| Activo | Vehículo (patente, km, versión) | Propiedad (rol, m², dormitorios) |
+| Portales | Chileautos, MercadoLibre | PortalInmobiliario, Yapo, TocToc |
+| Calificación IA | Presupuesto, urgencia, parte de pago | Presupuesto, pre-aprobación, comuna |
+| Cierre | Transferencia, financiamiento | Promesa, crédito hipotecario |
+
+**Regla de diseño (importante)**: NO construir la plataforma abstracta ahora — eso
+mata MVPs. Se construye 100% concreto para automotoras, pero con tres separaciones
+limpias que hacen barato el fork a otro nicho después: (a) el esquema del activo en
+su propio módulo, (b) integraciones de portales como *adapters* intercambiables,
+(c) prompts/herramientas del agente IA por vertical. La abstracción se hace recién
+cuando exista el segundo vertical real.
 
 ## 3. Integraciones — factibilidad verificada
 
