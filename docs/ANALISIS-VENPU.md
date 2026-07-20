@@ -2,7 +2,7 @@
 
 > Levantamiento a partir de capturas reales de la cuenta del cliente (jul 2026).
 > Documento en construcción — se completa a medida que llegan más pantallas.
-> Estado: 10 de 23 pantallas analizadas.
+> Estado: 15 de 23 pantallas analizadas.
 
 ## Mapa de navegación (sidebar)
 
@@ -104,6 +104,27 @@ explica el *por qué* en términos del portal:
 el checklist con % — es la mejor pieza de UX de Venpu. Nota: mencionan Yapo como
 portal (confirmar en pantalla de Integraciones qué canales soportan).
 
+## 3d. Control de Ventas
+
+- **Cumpleaños próximos** de clientes (sección propia; "en los próximos 30 días
+  no hay cumpleaños registrados") → excusa de contacto post-venta.
+- **Cierres mensuales**: períodos con botón **"Cerrar mes"** (candado). Cada
+  cierre guarda: rango de fechas, fecha/hora en que se cerró, y totales de
+  Ventas / Ingresos / Utilidad (ej. real: mayo 2026 — 5 ventas, $94.700.000
+  ingresos, utilidad $0).
+- Filtros: por vendedor, por **financiera**, por tipo. Botón **Descargar Excel**.
+- Tabla de ventas: Vehículo (título + código), Tipo, Vendedor, Precio venta,
+  **Gastos**, **Utilidad**, **Días** (días en stock hasta la venta, con color:
+  63d rojo, 56d naranjo, 9d/16d normal), Fecha. Fila de Totales.
+- Dato revelador: la utilidad del cliente aparece en $0 porque **no cargan los
+  gastos por vehículo** — el campo existe pero no lo usan.
+
+**Para nuestro software**: el "Cerrar mes" formal (congelar el período y generar
+el informe) es exactamente el "balance automático" que pide el cliente —
+replicar y automatizar (cierre + PDF + correo sin apretar botón). La utilidad
+en $0 es una oportunidad: si la carga de gastos es fácil (foto de la factura →
+IA extrae el monto), nuestro reporte de utilidad sí va a estar vivo.
+
 ## 4. Rendimiento (equipo y metas)
 
 - Subtítulo: "Cómo atiende tu equipo las oportunidades comerciales".
@@ -118,10 +139,80 @@ portal (confirmar en pantalla de Integraciones qué canales soportan).
   con más de 60 días en exhibición" + "Ver análisis completo".
 - **Metas mensuales**: "Meta Julio — 4 de 7 ventas — 57% completado" con barra
   de progreso → metas de venta por mes (probablemente por vendedor también).
+- **Rapidez en contactar (mediana 30d)**: métrica destacada (ej: **8s**) con
+  umbrales explícitos: <15 min = óptimo, <1 hora = aceptable, >24 h = "lead
+  frío". Mensaje: "Rapidez sana — así se gana al competidor".
+- El "Análisis del negocio" se genera on-demand (estado "Analizando…" al
+  refrescar) — no es estático.
 
 **Para nuestro software**: tenemos ventaja natural aquí — nuestro análisis IA
 puede ser conversacional (preguntarle al negocio) y accionable (que proponga y
 ejecute: crear campaña, bajar precio, reasignar). Venpu solo narra.
+
+## 4b. Leads (listado)
+
+- Tabs con contadores: **Mis leads (1135) / Disponibles (983) / Todos (1135) /
+  Matches (3) / Eliminados (26)**.
+  - "Matches" → aparente cruce automático entre lo que busca un lead y el
+    inventario disponible (confirmar con detalle de la pestaña).
+- Búsqueda por nombre, email o teléfono. Filtros: **Fuente, Tipo de lead,
+  Marca, Vendedor, rango de fechas** (desde/hasta). Exportar + "Agregar lead"
+  manual.
+- Tabla: Contacto (avatar, nombre, teléfono con botón copiar, email), Vehículo
+  de interés (título + código, o "Sin vehículo"), **Etapa editable inline**
+  (dropdown en la misma fila: "Calificado" verde, "Calificando" amarillo),
+  **Fuente como badges combinables** (WhatsApp, Meta Ads — un lead puede tener
+  ambas), Fecha relativa ("hace 3 minutos"), menú de acciones.
+
+## 4c. Embudo (pipeline Kanban) — pieza central
+
+- Vista Kanban de los mismos leads, con filtros arriba + **"Editar embudo"**
+  (etapas personalizables) + "Añadir lead".
+- **Etapas observadas**: Nuevo [etiqueta "Auto"] → Calificando [etiqueta "IA"]
+  → Calificado → Contactado/Seguimiento → Visita Agendada → … (continúa a la
+  derecha; confirmar etapas finales, p.ej. Negociación/Vendido/Perdido).
+  - "Nuevo (Auto)": los leads entran solos desde los canales.
+  - **"Calificando (IA)": el asistente IA conversa y califica en esta etapa —
+    la calificación automática está embebida en el embudo.**
+- Tarjeta de lead: nombre + ícono WhatsApp (abrir conversación), teléfono,
+  vehículo de interés, badges de fuente (Meta Ads / WhatsApp / MercadoLibre),
+  contador de mensajes (💬 3, 12, 34…), vendedor asignado, tiempo desde última
+  actividad (3m, 25m, 2 días, 8 días).
+- **Leads HOT**: ícono de llama roja + borde izquierdo rojo en la tarjeta.
+- Badge "Perdido" en tarjetas descartadas (quedan visibles en su columna).
+
+**Para nuestro software**: replicar completo (Kanban + etapas editables + HOT +
+IA en etapa de calificación) y superar con: score numérico visible y explicable
+("por qué está HOT"), SLA por etapa con alertas, movimiento automático también
+post-calificación (visita agendada por el agente → mueve solo), y detección de
+leads que se enfrían (sin respuesta X horas → acción sugerida).
+
+## 4d. Campañas (Meta Ads) — Venpu YA crea campañas
+
+- "Crea y gestiona tus campañas de Meta Ads" + botón **"Nueva campaña"** →
+  la creación de campañas Meta desde la app existe en Venpu (no es vacío).
+- Tabs: Activas (12) / Pausadas (0) / Borradores (0) / Todas (23).
+- Nota de sincronización: "Estado local — sincronización automática cada hora"
+  + botón manual **"Sincronizar con Meta"**. Exportar CSV. Filtro de período
+  ("Acumulado (todo)").
+- **Tipos de campaña observados**:
+  - **"Catálogo"** (ej: "Consignación · 9/7 — Catálogo · 0 vehículos") →
+    campañas de catálogo (Advantage+ / dynamic ads sobre feed de vehículos).
+  - **"CTWA · [vehículos]"** (ej: "CTWA · FORD F150… — WhatsApp · 1 vehículo",
+    "…3 vehículos", "…8 vehículos") → click-to-WhatsApp por vehículo(s)
+    específico(s); el lead cae directo al asistente IA.
+- Columnas: Estado, Campaña (nombre + tipo + n° vehículos), **Regiones**
+  (segmentación geográfica: "Lo Barnechea, Las Condes +2", "Metropolitana,
+  O'Higgins"), **Presupuesto diario** ($2.000–$10.000/día), **Contactos**
+  (leads generados), Gasto, **CPL** (costo por lead: $695–$5.594), Impresiones,
+  Alcance.
+
+**Para nuestro software**: paridad = crear CTWA por vehículo y campañas de
+catálogo con presupuesto/regiones, y reportar CPL por campaña. Esteroides =
+el agente IA propone la campaña solo (detecta auto con 45+ días sin movimiento
+→ sugiere CTWA con presupuesto y creativo del Estudio listos para aprobar),
+optimiza por CPL entre campañas y cierra el loop: campaña → lead → venta
+(ROAS real por vehículo, no solo CPL).
 
 ## 5. Estudio IA (creativos)
 
@@ -204,13 +295,13 @@ con resumen al vendedor.
 
 ## Pendiente de levantar (pantallas que faltan)
 
-- [ ] **Leads** (listado, ficha de un lead, calificación HOT/tibio/frío)
-- [ ] **Embudo** (etapas del pipeline y movimiento automático)
+- [x] Leads (listado) — falta: ficha/detalle de un lead y pestaña "Matches"
+- [x] Embudo — falta: etapas finales del Kanban (derecha) y "Editar embudo"
+- [x] Control de Ventas — falta: formulario de registro de una venta
+- [x] Campañas (listado) — falta: flujo "Nueva campaña"
 - [ ] **Clientes** (ficha, historial)
-- [ ] **Control de Ventas** (registro de venta, utilidad)
 - [ ] **Consultar patente** (qué devuelve)
 - [ ] **Recordatorios**
-- [ ] **Campañas** (creación/gestión de campañas Meta)
 - [ ] **Estudio IA — tabs Creativos y Contenido**
 - [ ] **Automatización** (qué automatizaciones ofrece)
 - [ ] **Asignación de leads** (routing)
