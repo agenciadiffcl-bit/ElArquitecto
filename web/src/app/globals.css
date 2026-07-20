@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Sistema visual derivado del prototipo Zentrum: negro profundo, dorado,
+   tipografía SF-style. */
+:root {
+  --black: #070707;
+  --surface: #0e0e0f;
+  --surface-2: #141416;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --white: #f5f5f7;
+  --silver: #a1a1a6;
+  --gray: #6e6e73;
+  --accent: #c8a96e;
+  --accent-soft: rgba(200, 169, 110, 0.14);
+  --hot: #ff5a4e;
+  --warm: #f0a848;
+  --cold: #6aa7ff;
+  --ok: #4ade80;
+}
+
+@theme inline {
+  --color-black: var(--black);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-cream: var(--white);
+  --color-silver: var(--silver);
+  --color-muted: var(--gray);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-hot: var(--hot);
+  --color-warm: var(--warm);
+  --color-cold: var(--cold);
+  --color-ok: var(--ok);
+  --font-sans: -apple-system, "SF Pro Display", "Helvetica Neue", "Segoe UI",
+    Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", "Segoe UI",
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #000;
+}
+
+/* Scrollbars discretos */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}

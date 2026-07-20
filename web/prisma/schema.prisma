@@ -1,0 +1,326 @@
+// Modelo de datos — Plataforma de gestión para automotoras
+// Multi-tenant desde el día 1: toda entidad de negocio cuelga de un Tenant.
+// Provider SQLite para desarrollo; portable a PostgreSQL (sin enums nativos:
+// los campos de estado usan String con uniones tipadas en src/lib/types.ts).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ── Núcleo multi-tenant ──────────────────────────────────────────────
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  branches      Branch[]
+  users         User[]
+  vehicles      Vehicle[]
+  leads         Lead[]
+  stages        PipelineStage[]
+  sales         Sale[]
+  monthlyCloses MonthlyClose[]
+  customers     Customer[]
+  reminders     Reminder[]
+  campaigns     Campaign[]
+  agentConfig   AgentConfig?
+}
+
+model Branch {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  name     String
+  region   String?
+  comuna   String?
+  address  String?
+
+  users    User[]
+  vehicles Vehicle[]
+}
+
+model User {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+  name     String
+  email    String  @unique
+  phone    String?
+  role     String  @default("seller") // owner | admin | seller
+
+  vehicles Vehicle[]
+  leads    Lead[]
+  sales    Sale[]
+}
+
+// ── Inventario ───────────────────────────────────────────────────────
+
+model Vehicle {
+  id       String  @id @default(cuid())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+  sellerId String?
+  seller   User?   @relation(fields: [sellerId], references: [id])
+
+  code    String  @unique // COD###### interno
+  plate   String? // patente
+  vin     String?
+  brand   String
+  model   String
+  version String?
+  title   String
+  year    Int
+  km      Int     @default(0)
+
+  fuel          String? // bencina | diesel | hibrido | electrico
+  transmission  String? // manual | automatica
+  bodyType      String? // suv | sedan | hatchback | camioneta | ...
+  vehicleType   String  @default("auto") // auto | moto | camion
+  doors         Int?
+  exteriorColor String?
+  interiorColor String?
+  equipment     String? // texto libre, separado por comas
+  tags          String? // separado por comas
+
+  price           Int
+  financingDown   Int? // pie de financiamiento (monto en pesos)
+  acquisitionCost Int? // costo de adquisición (para utilidad)
+
+  singleOwner    Boolean @default(false)
+  previousOwners Int?
+
+  circulationPermitExpiry DateTime?
+  technicalReviewExpiry   DateTime?
+
+  description        String?
+  status             String  @default("draft") // draft | available | reserved | sold | preparing
+  consignment        Boolean @default(false) // auto en consignación
+  virtualConsignment Boolean @default(false) // no está físicamente en la automotora
+
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+  soldAt      DateTime?
+
+  photos   VehiclePhoto[]
+  channels VehicleChannel[]
+  expenses VehicleExpense[]
+  leads    Lead[]
+  sale     Sale?
+}
+
+model VehiclePhoto {
+  id        String  @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  url       String
+  position  Int     @default(0)
+  isMain    Boolean @default(false)
+}
+
+// Publicación por canal (MercadoLibre, Chileautos, sitio propio…)
+model VehicleChannel {
+  id         String    @id @default(cuid())
+  vehicleId  String
+  vehicle    Vehicle   @relation(fields: [vehicleId], references: [id])
+  channel    String // mercadolibre | chileautos | sitio | yapo
+  status     String    @default("pending") // pending | published | paused | error
+  externalId String?
+  url        String?
+  syncedAt   DateTime?
+
+  @@unique([vehicleId, channel])
+}
+
+// Gastos por vehículo (preparación, comisiones, traslado…) → utilidad viva
+model VehicleExpense {
+  id        String   @id @default(cuid())
+  vehicleId String
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  label     String
+  amount    Int
+  date      DateTime @default(now())
+}
+
+// ── CRM: leads, embudo, eventos ──────────────────────────────────────
+
+// Etapas del embudo, configurables por tenant (paridad Venpu: 11 etapas)
+model PipelineStage {
+  id           String  @id @default(cuid())
+  tenantId     String
+  tenant       Tenant  @relation(fields: [tenantId], references: [id])
+  name         String
+  order        Int
+  kind         String  @default("progress") // entry | progress | won | lost
+  agentEnabled Boolean @default(false) // el agente IA atiende esta etapa
+
+  leads Lead[]
+
+  @@unique([tenantId, order])
+}
+
+model Lead {
+  id        String        @id @default(cuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id])
+  stageId   String
+  stage     PipelineStage @relation(fields: [stageId], references: [id])
+  sellerId  String?
+  seller    User?         @relation(fields: [sellerId], references: [id])
+  vehicleId String?
+  vehicle   Vehicle?      @relation(fields: [vehicleId], references: [id])
+
+  name  String
+  phone String?
+  email String?
+
+  sources     String  @default("") // separado por comas: whatsapp,meta_ads,mercadolibre,chileautos,sitio
+  temperature String? // hot | warm | cold
+  score       Int? // 0–100, asignado por el agente IA
+  scoreReason String? // razón escrita de la calificación
+
+  messageCount   Int       @default(0)
+  lastActivityAt DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  archivedAt     DateTime?
+  lost           Boolean   @default(false)
+
+  notes     LeadNote[]
+  events    LeadEvent[]
+  sale      Sale?
+  reminders Reminder[]
+}
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  body      String
+  author    String   @default("human") // human | agent
+  createdAt DateTime @default(now())
+}
+
+// Bitácora: todo movimiento de etapa queda auditado con motivo y actor
+model LeadEvent {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  fromStage String?
+  toStage   String?
+  reason    String?
+  actor     String   @default("system") // agent | human | system
+  createdAt DateTime @default(now())
+}
+
+// ── Ventas y cierres ─────────────────────────────────────────────────
+
+model Sale {
+  id        String  @id @default(cuid())
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  vehicleId String  @unique
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  leadId    String? @unique
+  lead      Lead?   @relation(fields: [leadId], references: [id])
+  sellerId  String?
+  seller    User?   @relation(fields: [sellerId], references: [id])
+
+  price            Int
+  saleType         String? // contado | financiado | parte_de_pago
+  financingCompany String?
+  daysInStock      Int?
+  soldAt           DateTime      @default(now())
+  monthlyCloseId   String?
+  monthlyClose     MonthlyClose? @relation(fields: [monthlyCloseId], references: [id])
+}
+
+model MonthlyClose {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  periodStart DateTime
+  periodEnd   DateTime
+  closedAt    DateTime @default(now())
+  salesCount  Int
+  revenue     Int
+  profit      Int
+
+  sales Sale[]
+}
+
+// ── Post-venta y recordatorios ───────────────────────────────────────
+
+model Customer {
+  id        String    @id @default(cuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  name      String
+  phone     String?
+  email     String?
+  birthday  DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Reminder {
+  id       String   @id @default(cuid())
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  leadId   String?
+  lead     Lead?    @relation(fields: [leadId], references: [id])
+  title    String
+  dueAt    DateTime
+  done     Boolean  @default(false)
+}
+
+// ── Marketing ────────────────────────────────────────────────────────
+
+model Campaign {
+  id          String    @id @default(cuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  name        String
+  kind        String // ctwa | catalog
+  status      String    @default("draft") // draft | active | paused
+  dailyBudget Int?
+  regions     String? // separado por comas
+  vehicleIds  String? // separado por comas (CTWA por vehículo)
+  contacts    Int       @default(0)
+  spend       Int       @default(0)
+  impressions Int       @default(0)
+  reach       Int       @default(0)
+  externalId  String?
+  syncedAt    DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+// ── Agente IA (configuración por tenant) ─────────────────────────────
+
+model AgentConfig {
+  id       String @id @default(cuid())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  agentName String @default("Asistente") // ej: "Antonia"
+
+  // Condiciones de activación (OR)
+  respondCtwa             Boolean @default(true)
+  respondNewContacts      Boolean @default(true)
+  respondExistingContacts Boolean @default(false)
+
+  // Servicios que ofrece la automotora
+  serviceConsignment Boolean @default(false)
+  serviceDirectBuy   Boolean @default(false)
+
+  knowledge    String? // qué debe saber/decir (texto libre)
+  restrictions String? // qué NO debe decir (texto libre)
+}
