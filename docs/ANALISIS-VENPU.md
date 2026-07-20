@@ -2,7 +2,7 @@
 
 > Levantamiento a partir de capturas reales de la cuenta del cliente (jul 2026).
 > Documento en construcción — se completa a medida que llegan más pantallas.
-> Estado: 15 de 23 pantallas analizadas.
+> Estado: 20 de 23 pantallas analizadas.
 
 ## Mapa de navegación (sidebar)
 
@@ -85,8 +85,23 @@ canal son excelente UX — replicar. Sumar: margen y días en stock como columna
 - **Descripción**: textarea 50–5000 caracteres con botón **"Mejorar con IA"**.
   Placeholder guía: estado, equipamiento, historial de mantenciones, razón de venta.
 - **Ubicación y asignación**: Sucursal (prellenar ubicación y filtrar
-  vendedores), Región*, Comuna*, Vendedor asignado.
+  vendedores — "mostrando vendedores de la sucursal seleccionada"), Región*,
+  Comuna*, Vendedor asignado.
+- **Imágenes del vehículo**: hasta 50 imágenes, la primera es la principal.
+  Formatos: JPEG, PNG, WebP, GIF, HEIC (máx 50MB) y video MP4, MOV, WebM
+  (máx 500MB).
+- **Canales de publicación (por vehículo)**: toggles de canal donde se
+  publicará al activar el vehículo (en la cuenta del cliente solo aparece
+  MercadoLibre activo → los canales visibles dependen de las integraciones
+  conectadas de la cuenta).
+- **"Consignación virtual"** (toggle por vehículo): "Actívalo si el auto no
+  está físicamente en la automotora. El asistente no invitará al cliente a la
+  sucursal y coordinará con un asesor cómo verlo." → **el comportamiento del
+  agente IA se adapta según el vehículo** — detalle fino clave.
 - Acciones: Cancelar / **Guardar borrador** / **Guardar y publicar**.
+- Ítems adicionales del checklist lateral: tipo de carrocería ("categoría de
+  búsqueda principal: SUV, Sedán, Hatchback"), número de puertas ("filtro de
+  búsqueda frecuente"), equipamiento, ubicación.
 
 ### 3c. Panel lateral "Tu publicación X%" (gamificación)
 Checklist de 12 campos con % de completitud y consejo por ítem, cada uno
@@ -103,6 +118,19 @@ explica el *por qué* en términos del portal:
 **Para nuestro software**: replicar completo el patrón patente→autocompletado y
 el checklist con % — es la mejor pieza de UX de Venpu. Nota: mencionan Yapo como
 portal (confirmar en pantalla de Integraciones qué canales soportan).
+
+## 3c-bis. Consultar patente (herramienta suelta)
+
+- "Consulta datos del **Registro Civil**, **tasación de mercado** y **alerta de
+  encargo por robo** sin crear un vehículo." — input de patente + botón
+  Consultar.
+- Nota de la UI: "Los datos se cachean por 24h para reducir costos" con botón
+  de refresh para forzar consulta nueva → la consulta a la fuente tiene costo
+  por llamada (proveedor externo de datos de patente).
+
+**Para nuestro software**: misma herramienta (tasación + dueño/registro +
+encargo por robo) usando proveedores chilenos de datos de patente; cachear
+igual. Es también el paso 1 del flujo de toma en parte de pago.
 
 ## 3d. Control de Ventas
 
@@ -300,7 +328,7 @@ con resumen al vendedor.
 - [x] Control de Ventas — falta: formulario de registro de una venta
 - [x] Campañas (listado) — falta: flujo "Nueva campaña"
 - [ ] **Clientes** (ficha, historial)
-- [ ] **Consultar patente** (qué devuelve)
+- [x] Consultar patente — falta: pantalla de resultados de una consulta
 - [ ] **Recordatorios**
 - [ ] **Estudio IA — tabs Creativos y Contenido**
 - [ ] **Automatización** (qué automatizaciones ofrece)
