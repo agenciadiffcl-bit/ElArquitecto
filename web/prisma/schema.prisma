@@ -194,11 +194,24 @@ model Lead {
   createdAt      DateTime  @default(now())
   archivedAt     DateTime?
   lost           Boolean   @default(false)
+  agentActive    Boolean   @default(true) // el agente IA atiende la conversación
 
   notes     LeadNote[]
   events    LeadEvent[]
   sale      Sale?
   reminders Reminder[]
+  messages  Message[]
+}
+
+// Conversación del lead (WhatsApp o simulador)
+model Message {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  role      String // customer | agent | seller
+  body      String
+  channel   String   @default("simulator") // simulator | whatsapp
+  createdAt DateTime @default(now())
 }
 
 model LeadNote {

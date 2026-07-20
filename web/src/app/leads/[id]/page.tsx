@@ -8,6 +8,7 @@ import {
   SourceBadges,
   TemperatureBadge,
 } from "@/components/ui";
+import { ConversationPanel } from "./conversation-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -27,14 +28,18 @@ export default async function LeadDetailPage({
       seller: true,
       notes: { orderBy: { createdAt: "desc" } },
       events: { orderBy: { createdAt: "desc" } },
+      messages: { orderBy: { createdAt: "asc" } },
     },
   });
   if (!lead) notFound();
 
-  const stages = await prisma.pipelineStage.findMany({
-    where: { tenantId: tenant.id },
-    orderBy: { order: "asc" },
-  });
+  const [stages, agentConfig] = await Promise.all([
+    prisma.pipelineStage.findMany({
+      where: { tenantId: tenant.id },
+      orderBy: { order: "asc" },
+    }),
+    prisma.agentConfig.findUnique({ where: { tenantId: tenant.id } }),
+  ]);
 
   return (
     <>
@@ -191,30 +196,20 @@ export default async function LeadDetailPage({
           </Card>
         </div>
 
-        {/* Conversación (placeholder hasta conectar WhatsApp Cloud API) */}
+        {/* Conversación: simulador conectado al agente IA real (Claude) */}
         <aside className="sticky top-8 w-96 shrink-0">
           <Card className="!p-0">
-            <header className="flex items-center justify-between border-b border-line px-5 py-4">
-              <p className="text-[14px] font-bold">
-                Conversación ({lead.messageCount})
-              </p>
-              <Badge tone="gold">✦ Agente IA</Badge>
-            </header>
-            <div className="flex h-72 items-center justify-center px-6 text-center">
-              <p className="text-[13px] leading-relaxed text-muted">
-                La bandeja de WhatsApp se conectará aquí
-                <br />
-                (WhatsApp Cloud API — Fase 1).
-              </p>
-            </div>
-            <footer className="flex items-center justify-between border-t border-line px-5 py-3.5">
-              <p className="text-[12px] text-muted">
-                El agente IA atenderá esta conversación
-              </p>
-              <button className="rounded-full border border-line px-4 py-1.5 text-[12px] font-semibold text-silver">
-                Tomar control
-              </button>
-            </footer>
+            <ConversationPanel
+              leadId={lead.id}
+              initialMessages={lead.messages.map((m) => ({
+                id: m.id,
+                role: m.role,
+                body: m.body,
+                createdAt: m.createdAt.toISOString(),
+              }))}
+              agentActive={lead.agentActive}
+              agentName={agentConfig?.agentName ?? "Asistente"}
+            />
           </Card>
         </aside>
       </div>
