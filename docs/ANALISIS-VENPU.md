@@ -2,7 +2,8 @@
 
 > Levantamiento a partir de capturas reales de la cuenta del cliente (jul 2026).
 > Documento en construcción — se completa a medida que llegan más pantallas.
-> Estado: 20 de 23 pantallas analizadas.
+> Estado: levantamiento completo (23+ pantallas, incluye ficha de lead y
+> conversaciones reales del agente IA).
 
 ## Mapa de navegación (sidebar)
 
@@ -242,6 +243,91 @@ el agente IA propone la campaña solo (detecta auto con 45+ días sin movimiento
 optimiza por CPL entre campañas y cierra el loop: campaña → lead → venta
 (ROAS real por vehículo, no solo CPL).
 
+## 4e. Ficha de lead + conversación del agente IA (la joya del levantamiento)
+
+La ficha se abre como panel lateral sobre el Kanban o como página propia
+(`/leads/<id>`), dividida en ficha (izquierda) y conversación (derecha).
+
+### Ficha (izquierda)
+- Header: nombre (tal como viene de WhatsApp, con emojis), badges de fuente
+  (Meta Ads, WhatsApp), **badge de temperatura** ("🔥 Caliente" rojo / "Frío"
+  azul) y chip de etapa actual. Borde rojo si está caliente.
+- CONTACTO: email, teléfono (copiar / abrir chat) + botón **"Registrar llamada"**.
+- VEHÍCULO DE INTERÉS: vehículo vinculado + "Cambiar" + botón **"Registrar
+  venta"** (la venta se registra desde el lead — cierra el loop lead→venta).
+- ASIGNACIÓN: vendedor actual + "Reasignar a…".
+- RECORDATORIOS: crear recordatorio desde la ficha.
+- ETAPA: chips clicables con **el embudo completo**: Nuevo → Calificando →
+  Calificado → Contactado/Seguimiento → Visita Agendada → Sin Respuesta →
+  Ganado → Descartado → **Gestión Crédito → UPP evaluación → Consigna/Compra**
+  (etapas específicas del rubro: crédito, tasación de parte de pago,
+  consignación/compra directa).
+- NOTAS: notas generadas por la IA ("Cliente confirma interés en el Audi Q3 y
+  acepta contacto con asesor para coordinar visita", "El cliente indica
+  explícitamente que no tiene…") + agregar manual.
+- **BITÁCORA** (audit log de movimientos, con timestamp):
+  - "Nuevo → Calificando — Agente IA inició la calificación"
+  - "Calificando → Calificado — **Calificación: HOT (score: 90)**. Cliente
+    confirma interés…"
+  → **la calificación es un score numérico 0–100 con razón escrita**, y cada
+  movimiento de etapa queda registrado con su motivo.
+
+### Conversación (derecha)
+- Header: "Conversación (N)" + badge "Agente IA". Footer: "El agente IA está
+  atendiendo esta conversación" + botón **"Tomar control"** (handoff a humano).
+- **El asistente tiene nombre propio**: "Hola Maite, soy **Antonia**, el
+  asistente de Marketcar" — personaje configurable por automotora.
+- Comportamientos observados en conversaciones reales:
+  - Responde con la ficha exacta del vehículo (specs, km, dueños, precio) y
+    cierra siempre ofreciendo coordinar visita con un asesor.
+  - **Consciente de horario y equipo**: "hoy es domingo y estamos fuera del
+    horario de atención, Martin se pondrá en contacto contigo mañana lunes.
+    Te llamará desde el +56XXXXXXXXX, así podrás reconocer su número."
+  - Maneja objeción de precio con empatía (explica el valor de la versión),
+    ofrece alternativas según presupuesto, y si el cliente se baja ("Noooo.
+    Gracias") cierra cortés y **califica Frío** — coherencia entre conversación
+    y score.
+
+## 4f. Automatización del Embudo (config por etapa)
+
+- Página "Automatización del Embudo": "Configura qué hace el sistema en cada
+  etapa. Las etapas se crean y ordenan desde el Embudo."
+- Cada etapa es una tarjeta con: tipo (**entry** para "Nuevo", **progress**
+  para las demás), y qué automatización tiene adjunta — en el cliente:
+  "Agente IA" (activable/inactivo) en Nuevo, Calificando y **Sin Respuesta**;
+  "Sin configuración" en Calificado, Contactado/Seguimiento, Visita Agendada.
+- Lectura del modelo: **el agente IA se adjunta por etapa** — puede atender la
+  entrada (Nuevo), calificar (Calificando) y reactivar dormidos (Sin
+  Respuesta). Etapas sin automatización son manuales.
+
+**Para nuestro software**: mismo modelo (automatización adjunta por etapa) pero
+con más acciones por etapa: además de "Agente IA", permitir recordatorios
+automáticos, SLA con alerta, mensajes plantilla, tareas al vendedor y
+condiciones de movimiento automático.
+
+## 4g. Integraciones
+
+- **COMUNICACIÓN**:
+  - Meta Business (Messenger, Instagram y **Lead Ads**) — conectado.
+  - WhatsApp — "con tu propio número" — conectado (+56 9 XXXX XXXX).
+- **ASISTENTE IA**:
+  - **"Claude — Pregúntale a tus datos en lenguaje natural" — Incluido** →
+    confirmado: Venpu usa Claude como motor de IA, y además expone un chat de
+    consulta sobre los datos del negocio.
+- **PUBLICACIÓN EN MARKETPLACES**:
+  - MercadoLibre — "Incluido": **los vehículos se publican en la cuenta de
+    Venpu**, no la del cliente.
+  - "MercadoLibre cuenta propia" — opcional: publicar con cuenta propia "en
+    paralelo a la de Venpu".
+  - Yapo.cl — no conectado en el cliente.
+  - Chile Autos — "Publica tu inventario y recibe leads automáticamente" — no
+    conectado en el cliente.
+
+**Observación estratégica**: el MELI "incluido" publica bajo la cuenta de
+Venpu → la reputación y los avisos le pertenecen a Venpu, no a la automotora.
+Nuestro producto publica SIEMPRE en las cuentas propias del cliente (MELI,
+Chileautos): su reputación, sus leads, su data. Argumento de venta directo.
+
 ## 5. Estudio IA (creativos)
 
 - Tabs: **Showrooms / Creativos / Contenido**.
@@ -321,19 +407,62 @@ con resumen al vendedor.
 
 ---
 
-## Pendiente de levantar (pantallas que faltan)
+## Detalles menores sin levantar (no bloquean el diseño)
 
-- [x] Leads (listado) — falta: ficha/detalle de un lead y pestaña "Matches"
-- [x] Embudo — falta: etapas finales del Kanban (derecha) y "Editar embudo"
-- [x] Control de Ventas — falta: formulario de registro de una venta
-- [x] Campañas (listado) — falta: flujo "Nueva campaña"
-- [ ] **Clientes** (ficha, historial)
-- [x] Consultar patente — falta: pantalla de resultados de una consulta
-- [ ] **Recordatorios**
-- [ ] **Estudio IA — tabs Creativos y Contenido**
-- [ ] **Automatización** (qué automatizaciones ofrece)
-- [ ] **Asignación de leads** (routing)
-- [ ] **Integraciones** (canales/portales conectables)
-- [ ] **Mi Plan** (precios y límites por plan)
-- [ ] **Sucursales / Equipo** (roles y permisos)
-- [ ] **Bandeja WhatsApp** (cómo se ve la conversación + IA)
+Clientes, Recordatorios, tabs Creativos/Contenido del Estudio, Asignación de
+leads (routing), Mi Plan (precios), Sucursales/Equipo, pestaña "Matches" de
+Leads y el flujo "Nueva campaña". Se pueden pedir al cliente puntualmente
+cuando toque diseñar cada módulo.
+
+---
+
+# SÍNTESIS — Mapa paridad vs. esteroides
+
+## Confirmaciones clave del levantamiento
+
+1. **Venpu usa Claude** (visible en Integraciones). No es moat: tenemos acceso
+   al mismo motor. La diferencia se hará en la profundidad de la integración.
+2. La calificación de leads es **un agente de WhatsApp con nombre propio**
+   ("Antonia") que conversa, califica con **score 0–100 + razón escrita**
+   (bitácora: "HOT (score: 90)"), asigna temperatura (Caliente/Frío) y mueve
+   la etapa solo. El agente se adjunta **por etapa** del embudo.
+3. El embudo real del rubro tiene 11 etapas, incluyendo específicas:
+   **Gestión Crédito, UPP evaluación, Consigna/Compra**.
+4. Venpu publica en MELI **con la cuenta de Venpu** (la reputación es de
+   ellos); Chileautos y Yapo existen como integraciones opcionales.
+5. El dashboard es una lista de acciones ("requiere atención"), no un panel de
+   estadísticas. Los reportes financieros existen pero mueren porque nadie
+   carga gastos (utilidad $0).
+
+## Paridad (replicar tal cual — es la base esperada)
+
+- Alta por patente con autocompletado + tasación; checklist "% publicación".
+- Inventario con canales por vehículo, score de calidad, export.
+- Embudo Kanban con etapas editables, tarjetas ricas, HOT, bitácora.
+- Agente WhatsApp: nombre configurable, condiciones de activación, servicios,
+  saber/no-decir, consignación virtual por vehículo, "Tomar control".
+- Campañas Meta: CTWA por vehículo + catálogo, CPL, sync con Meta.
+- Control de ventas con cierre mensual + Excel; metas mensuales; rapidez de
+  contacto; análisis narrado del negocio; recordatorios; cumpleaños.
+- Consultar patente (Registro Civil + tasación + encargo por robo, caché 24h).
+- Estudio de creativos con fondos IA.
+- Catálogo público compartible.
+
+## Esteroides (dónde ganamos)
+
+1. **Identidad propia**: sitio en dominio del cliente (nivel Zentrum) +
+   publicación en MELI/Chileautos con las cuentas del cliente. Su marca, su
+   reputación, su data — no la de la plataforma.
+2. **Agente que ejecuta, no solo conversa**: agenda visitas en calendario
+   real, envía fotos/ficha automáticamente, registra la tasación de parte de
+   pago, y hace handoff con resumen al vendedor por WhatsApp.
+3. **IA operativa proactiva**: propone campañas para stock estancado (creativo
+   + presupuesto listos para aprobar), detecta leads enfriándose, redacta el
+   cierre mensual en lenguaje natural y lo envía solo.
+4. **Utilidad viva**: captura de gastos sin fricción (foto de factura → IA
+   extrae monto) para que margen/utilidad reporten de verdad.
+5. **Chat con tus datos con acciones**: no solo "pregúntale a tus datos" —
+   "hazlo" (crear campaña, reasignar, recordar, exportar).
+6. **Post-venta**: garantías, recompra 2–3 años, referidos — Venpu no lo toca.
+7. **ROAS real por vehículo**: cerrar el loop campaña → lead → venta (Venpu
+   muestra CPL, nosotros mostramos qué campaña vendió autos).
